@@ -46,9 +46,15 @@ export default function Products() {
     // URL-dən brand parametrini oxu
     const brandParam = searchParams.get('brand');
     if (brandParam) {
-      setBrandFilters([brandParam]);
-      // Filtr panelini avtomatik açma - istifadəçi özü düyməni klikləsin
-      // setShowAdvancedFilters(true);
+      // Brend adının düzgün halını tap (böyük-kiçik hərflərə həssas olmaması üçün)
+      const exactBrand = allBrands.find(
+        b => b.toLowerCase() === brandParam.toLowerCase()
+      );
+      if (exactBrand) {
+        setBrandFilters([exactBrand]);
+        // Filter panelini avtomatik açmayaq
+        // setShowAdvancedFilters(true);
+      }
     }
 
     // URL-dən gender parametrini oxu
@@ -67,15 +73,24 @@ export default function Products() {
     const familyParam = searchParams.get('family');
     if (familyParam && fragranceFamilies.includes(familyParam)) {
       setFamilyFilters([familyParam]);
+      // Filter panelini avtomatik açmayaq
+      // setShowAdvancedFilters(true);
     }
     
     // URL-dən not parametrini oxu
     const noteParam = searchParams.get('note');
-    if (noteParam && allNotes.includes(noteParam)) {
-      setNoteFilters([noteParam]);
-      // setShowAdvancedFilters(true); // Bu sətri deaktiv edirəm ki, panel avtomatik açılmasın
+    if (noteParam) {
+      // Not adının düzgün halını tap (böyük-kiçik hərflərə həssas olmaması üçün)
+      const exactNote = allNotes.find(
+        n => n.toLowerCase() === noteParam.toLowerCase()
+      );
+      if (exactNote) {
+        setNoteFilters([exactNote]);
+        // Filter panelini avtomatik açmayaq
+        // setShowAdvancedFilters(true);
+      }
     }
-  }, [searchParams, allNotes]);
+  }, [searchParams, allNotes, allBrands]);
 
   // Filtr dəyişdikdə URL parametrlərini yenilə
   useEffect(() => {
@@ -296,20 +311,63 @@ export default function Products() {
         </div>
       </div>
 
+      {/* Aktiv filtrlər sətri - silinəcək */}
+      {/* {isFilterActive && (
+        <div className="bg-white p-4 rounded-lg shadow-sm mb-6 flex flex-wrap justify-between items-center">
+          <div className="flex-1">
+            <div className="flex flex-wrap gap-2">
+              {brandFilters.map(brand => (
+                <div key={brand} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  <span className="text-primary font-medium">{brand}</span>
+                  <button onClick={() => toggleFilter(brand, brandFilters, setBrandFilters)} className="ml-2 text-primary">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              
+              {concentrationFilters.map(concentration => (
+                <div key={concentration} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  <span className="text-primary font-medium">{concentration}</span>
+                  <button onClick={() => toggleFilter(concentration, concentrationFilters, setConcentrationFilters)} className="ml-2 text-primary">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              
+              {noteFilters.map(note => (
+                <div key={note} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  <span className="text-primary font-medium">{note}</span>
+                  <button onClick={() => toggleFilter(note, noteFilters, setNoteFilters)} className="ml-2 text-primary">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              
+              {familyFilters.map(family => (
+                <div key={family} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  <span className="text-primary font-medium">{family}</span>
+                  <button onClick={() => toggleFilter(family, familyFilters, setFamilyFilters)} className="ml-2 text-primary">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          <button 
+            onClick={clearAllFilters}
+            className="text-primary hover:text-primary/80 text-sm flex items-center bg-primary/5 px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-colors ml-4 whitespace-nowrap"
+          >
+            <X className="w-4 h-4 mr-1" />
+            Hamısını təmizlə
+          </button>
+        </div>
+      )} */}
+
       {/* Ətraflı filtrlər - açılıb bağlanan */}
       {showAdvancedFilters && (
         <div className="bg-white p-5 rounded-lg shadow-md mb-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-medium text-lg">Ətraflı filtrlər</h3>
-            {isFilterActive && (
-              <button 
-                onClick={clearAllFilters}
-                className="text-primary hover:text-primary/80 text-sm flex items-center"
-              >
-                <X className="w-4 h-4 mr-1" />
-                Hamısını təmizlə
-              </button>
-            )}
           </div>
           
           {/* Ətir qrupları filtri */}
@@ -399,50 +457,6 @@ export default function Products() {
               </div>
             </div>
           </div>
-          
-          {/* Aktiv filtrlər göstər - əgər varsa */}
-          {isFilterActive && (
-            <div className="mt-5 pt-4 border-t border-gray-200">
-              <h3 className="text-sm font-medium mb-2 text-gray-600">Aktiv filtrlər:</h3>
-              <div className="flex flex-wrap gap-2">
-                {brandFilters.map(brand => (
-                  <div key={brand} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
-                    <span className="text-primary font-medium">{brand}</span>
-                    <button onClick={() => toggleFilter(brand, brandFilters, setBrandFilters)} className="ml-2 text-primary">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-                
-                {concentrationFilters.map(concentration => (
-                  <div key={concentration} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
-                    <span className="text-primary font-medium">{concentration}</span>
-                    <button onClick={() => toggleFilter(concentration, concentrationFilters, setConcentrationFilters)} className="ml-2 text-primary">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-                
-                {noteFilters.map(note => (
-                  <div key={note} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
-                    <span className="text-primary font-medium">{note}</span>
-                    <button onClick={() => toggleFilter(note, noteFilters, setNoteFilters)} className="ml-2 text-primary">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-                
-                {familyFilters.map(family => (
-                  <div key={family} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
-                    <span className="text-primary font-medium">{family}</span>
-                    <button onClick={() => toggleFilter(family, familyFilters, setFamilyFilters)} className="ml-2 text-primary">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
 
@@ -454,59 +468,115 @@ export default function Products() {
           <p className="text-lg text-gray-500">Axtarışınıza uyğun məhsul tapılmadı.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
-          {filteredProducts.map((product) => (
-            <Link 
-              to={`/products/${product.id}`} 
-              key={product.id}
-              className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group hover:-translate-y-1"
-            >
-              <div className="relative overflow-hidden bg-gray-50 h-52 flex items-center justify-center p-4">
-                <img
-                  src={product.image}
-                  alt={`${product.brand} ${product.name} ətri`}
-                  title={`${product.brand} ${product.name}`}
-                  className="max-h-44 max-w-[80%] h-auto w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "https://dummyimage.com/200x200/f0f0f0/333333.png&text=Şəkil+yoxdur";
-                    target.onerror = null; // Prevent infinite fallback loop
-                  }}
-                />
-                {!product.inStock && (
-                  <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                    Bitib
-                  </div>
-                )}
-                <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100">
-                    <Heart className="w-4 h-4 text-gray-600" />
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-medium text-gray-800">Məhsullar ({filteredProducts.length})</h3>
+            {isFilterActive && (
+              <button 
+                onClick={clearAllFilters}
+                className="text-primary hover:text-primary/80 text-sm flex items-center bg-primary/5 px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-colors whitespace-nowrap"
+              >
+                <X className="w-4 h-4 mr-1" />
+                Hamısını təmizlə
+              </button>
+            )}
+          </div>
+          
+          {/* Aktiv filtrlər sətri */}
+          {isFilterActive && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {brandFilters.map(brand => (
+                <div key={brand} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  <span className="text-primary font-medium">{brand}</span>
+                  <button onClick={() => toggleFilter(brand, brandFilters, setBrandFilters)} className="ml-2 text-primary">
+                    <X className="w-3 h-3" />
                   </button>
                 </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-primary mb-1">{product.brand}</h3>
-                <h2 className="font-bold text-gray-800 text-lg mb-2 line-clamp-1">{product.name}</h2>
-                
-                <div className="flex items-center mb-2">
-                  <div className="flex items-center mr-2">
-                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                    <span className="ml-1 text-sm">{product.rating}</span>
-                  </div>
-                  <span className="text-sm text-gray-500 capitalize">{product.gender} • {product.size}</span>
-                </div>
-                
-                <div className="flex items-center justify-between mt-4">
-                  <span className="font-bold text-lg text-gray-900">{product.price} ₼</span>
-                  <button className="flex items-center justify-center bg-primary text-white rounded-full w-8 h-8 hover:bg-primary/90 transition-colors">
-                    <ShoppingBag className="w-4 h-4" />
+              ))}
+              
+              {concentrationFilters.map(concentration => (
+                <div key={concentration} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  <span className="text-primary font-medium">{concentration}</span>
+                  <button onClick={() => toggleFilter(concentration, concentrationFilters, setConcentrationFilters)} className="ml-2 text-primary">
+                    <X className="w-3 h-3" />
                   </button>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              ))}
+              
+              {noteFilters.map(note => (
+                <div key={note} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  <span className="text-primary font-medium">{note}</span>
+                  <button onClick={() => toggleFilter(note, noteFilters, setNoteFilters)} className="ml-2 text-primary">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              
+              {familyFilters.map(family => (
+                <div key={family} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  <span className="text-primary font-medium">{family}</span>
+                  <button onClick={() => toggleFilter(family, familyFilters, setFamilyFilters)} className="ml-2 text-primary">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
+            {filteredProducts.map((product) => (
+              <Link 
+                to={`/products/${product.id}`} 
+                key={product.id}
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group hover:-translate-y-1"
+              >
+                <div className="relative overflow-hidden bg-gray-50 h-52 flex items-center justify-center p-4">
+                  <img
+                    src={product.image}
+                    alt={`${product.brand} ${product.name} ətri`}
+                    title={`${product.brand} ${product.name}`}
+                    className="max-h-44 max-w-[80%] h-auto w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://dummyimage.com/200x200/f0f0f0/333333.png&text=Şəkil+yoxdur";
+                      target.onerror = null; // Prevent infinite fallback loop
+                    }}
+                  />
+                  {!product.inStock && (
+                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                      Bitib
+                    </div>
+                  )}
+                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100">
+                      <Heart className="w-4 h-4 text-gray-600" />
+                    </button>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="text-sm font-medium text-primary mb-1">{product.brand}</h3>
+                  <h2 className="font-bold text-gray-800 text-lg mb-2 line-clamp-1">{product.name}</h2>
+                  
+                  <div className="flex items-center mb-2">
+                    <div className="flex items-center mr-2">
+                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                      <span className="ml-1 text-sm">{product.rating}</span>
+                    </div>
+                    <span className="text-sm text-gray-500 capitalize">{product.gender} • {product.size}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-4">
+                    <span className="font-bold text-lg text-gray-900">{product.price} ₼</span>
+                    <button className="flex items-center justify-center bg-primary text-white rounded-full w-8 h-8 hover:bg-primary/90 transition-colors">
+                      <ShoppingBag className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
