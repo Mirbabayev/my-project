@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, Heart, ShoppingBag, ArrowLeft, ChevronRight, Check } from 'lucide-react';
 import { products } from '../../data/products';
 
@@ -107,12 +107,13 @@ export default function ProductDetails() {
             <h3 className="font-medium text-gray-800 mb-2">Qoxu notları</h3>
             <div className="flex flex-wrap gap-2">
               {product.notes.map((note, index) => (
-                <span 
+                <Link 
                   key={index} 
-                  className="bg-gray-100 rounded-full px-3 py-1 text-sm hover:bg-primary/10 transition-colors"
+                  to={`/products?note=${encodeURIComponent(note)}`}
+                  className="bg-gray-100 rounded-full px-3 py-1 text-sm hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
                 >
                   {note}
-                </span>
+                </Link>
               ))}
             </div>
           </div>

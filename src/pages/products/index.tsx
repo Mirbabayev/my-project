@@ -68,7 +68,14 @@ export default function Products() {
     if (familyParam && fragranceFamilies.includes(familyParam)) {
       setFamilyFilters([familyParam]);
     }
-  }, [searchParams]);
+    
+    // URL-dən not parametrini oxu
+    const noteParam = searchParams.get('note');
+    if (noteParam && allNotes.includes(noteParam)) {
+      setNoteFilters([noteParam]);
+      // setShowAdvancedFilters(true); // Bu sətri deaktiv edirəm ki, panel avtomatik açılmasın
+    }
+  }, [searchParams, allNotes]);
 
   // Filtr dəyişdikdə URL parametrlərini yenilə
   useEffect(() => {
@@ -94,8 +101,13 @@ export default function Products() {
       params.set('family', familyFilters[0]);
     }
     
+    // Not parametri - sadəcə bir not varsa
+    if (noteFilters.length === 1) {
+      params.set('note', noteFilters[0]);
+    }
+    
     setSearchParams(params, { replace: true });
-  }, [searchQuery, genderFilter, brandFilters, familyFilters, setSearchParams]);
+  }, [searchQuery, genderFilter, brandFilters, familyFilters, noteFilters, setSearchParams]);
 
   // Filtr tətbiq edilib-edilmədiyini yoxla
   const isFilterActive = 
