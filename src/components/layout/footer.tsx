@@ -19,7 +19,7 @@ export const Footer = () => {
               </li>
               <li className="flex items-center text-gray-600">
                 <Mail className="w-5 h-5 mr-2" />
-                <span>info@e-parfum.az</span>
+                <span>info@easyparfum.az</span>
               </li>
             </ul>
           </div>
@@ -71,7 +71,7 @@ export const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Haqqımızda</h3>
             <p className="text-gray-600">
-              E-Parfum - Azərbaycanın premium parfümeriya məhsulları platforması
+              EasyParfum - Azərbaycanın premium parfümeriya məhsulları platforması
             </p>
           </div>
         </div>
@@ -79,7 +79,7 @@ export const Footer = () => {
         <div className="border-t border-gray-200 pt-8">
           <div className="text-center">
             <p className="text-sm text-gray-500">
-              © {new Date().getFullYear()} E-Parfum. Bütün hüquqlar qorunur.
+              © {new Date().getFullYear()} EasyParfum. Bütün hüquqlar qorunur.
             </p>
           </div>
         </div>

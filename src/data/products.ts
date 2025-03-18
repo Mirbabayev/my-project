@@ -1,0 +1,297 @@
+export interface Product {
+  id: string;
+  name: string;
+  brand: string;
+  description: string;
+  image: string;
+  price: number;
+  rating: number;
+  gender: 'kişi' | 'qadın' | 'uniseks';
+  size: string;
+  concentration: string;
+  notes: string[];
+  inStock: boolean;
+}
+
+export const products: Product[] = [
+  {
+    id: "1",
+    name: "Dior Sauvage Elixir",
+    brand: "Dior",
+    description: "Kişilər üçün intensiv və ədviyyatlı ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.67989.jpg",
+    price: 160,
+    rating: 4.9,
+    gender: "kişi",
+    size: "60ml",
+    concentration: "Elixir",
+    notes: ["Qara istiot", "Lavanda", "Vanil"],
+    inStock: true
+  },
+  {
+    id: "2",
+    name: "Chanel Coco Mademoiselle",
+    brand: "Chanel",
+    description: "Qadınlar üçün təravətli və zərif çiçəkli ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.609.jpg",
+    price: 145,
+    rating: 4.8,
+    gender: "qadın",
+    size: "100ml",
+    concentration: "Eau de Parfum",
+    notes: ["Portağal", "Jasmin", "Paçuli"],
+    inStock: true
+  },
+  {
+    id: "3",
+    name: "Tom Ford Noir Extreme",
+    brand: "Tom Ford",
+    description: "Kişilər üçün şərq üslublu zəngin ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.29989.jpg",
+    price: 230,
+    rating: 4.7,
+    gender: "kişi",
+    size: "50ml",
+    concentration: "Eau de Parfum",
+    notes: ["Kardamom", "Müşk", "Tonka fasulyesi"],
+    inStock: true
+  },
+  {
+    id: "4",
+    name: "Yves Saint Laurent Black Opium",
+    brand: "YSL",
+    description: "Qadınlar üçün şirin və enerjili qoxu",
+    image: "https://fimgs.net/mdimg/perfume/375x500.25324.jpg",
+    price: 125,
+    rating: 4.6,
+    gender: "qadın",
+    size: "90ml",
+    concentration: "Eau de Parfum",
+    notes: ["Qəhvə", "Vanil", "Jasmin"],
+    inStock: true
+  },
+  {
+    id: "5",
+    name: "Guerlain Mon Guerlain",
+    brand: "Guerlain",
+    description: "Qadınlar üçün yumşaq və şərq qoxusu",
+    image: "https://fimgs.net/mdimg/perfume/375x500.43365.jpg",
+    price: 135,
+    rating: 4.7,
+    gender: "qadın",
+    size: "50ml",
+    concentration: "Eau de Parfum",
+    notes: ["Lavanda", "Vanil", "Sandal ağacı"],
+    inStock: true
+  },
+  {
+    id: "6",
+    name: "Acqua di Gio Profumo",
+    brand: "Giorgio Armani",
+    description: "Kişilər üçün dəniz və odunsu qoxu",
+    image: "https://fimgs.net/mdimg/perfume/375x500.29727.jpg",
+    price: 150,
+    rating: 4.8,
+    gender: "kişi",
+    size: "75ml",
+    concentration: "Parfum",
+    notes: ["Dəniz notları", "Paçuli", "Tütsü"],
+    inStock: true
+  },
+  {
+    id: "7",
+    name: "Jo Malone Oud & Bergamot",
+    brand: "Jo Malone",
+    description: "Uniseks, dərin və lüks qoxu",
+    image: "https://fimgs.net/mdimg/perfume/375x500.10355.jpg",
+    price: 180,
+    rating: 4.6,
+    gender: "uniseks",
+    size: "100ml",
+    concentration: "Cologne Intense",
+    notes: ["Oud", "Bergamot", "Sitra"],
+    inStock: true
+  },
+  {
+    id: "8",
+    name: "Byredo Black Saffron",
+    brand: "Byredo",
+    description: "Uniseks, şərq və dəri qoxulu ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.16227.jpg",
+    price: 210,
+    rating: 4.7,
+    gender: "uniseks",
+    size: "50ml",
+    concentration: "Eau de Parfum",
+    notes: ["Safran", "Dəri", "Bənövşə"],
+    inStock: true
+  },
+  {
+    id: "9",
+    name: "Lancôme Trésor",
+    brand: "Lancôme",
+    description: "Qadınlar üçün romantik və meyvəli ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.37.jpg",
+    price: 110,
+    rating: 4.5,
+    gender: "qadın",
+    size: "100ml",
+    concentration: "Eau de Parfum",
+    notes: ["Şaftalı", "Qızılgül", "Vanil"],
+    inStock: true
+  },
+  {
+    id: "10",
+    name: "Amouage Lyric Man",
+    brand: "Amouage",
+    description: "Kişilər üçün qızılgül və ədviyyatlı ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.4288.jpg",
+    price: 290,
+    rating: 4.8,
+    gender: "kişi",
+    size: "100ml",
+    concentration: "Eau de Parfum",
+    notes: ["Qızılgül", "Zəfəran", "Müşk"],
+    inStock: true
+  },
+  {
+    id: "11",
+    name: "Maison Margiela Replica Jazz Club",
+    brand: "Maison Margiela",
+    description: "Uniseks, isti və odunsu qoxu",
+    image: "https://fimgs.net/mdimg/perfume/375x500.15060.jpg",
+    price: 140,
+    rating: 4.6,
+    gender: "uniseks",
+    size: "100ml",
+    concentration: "Eau de Toilette",
+    notes: ["Rum", "Tütün", "Vanil"],
+    inStock: true
+  },
+  {
+    id: "12",
+    name: "Dolce & Gabbana The One",
+    brand: "D&G",
+    description: "Qadınlar üçün zərif və şərq qoxusu",
+    image: "https://fimgs.net/mdimg/perfume/375x500.1319.jpg",
+    price: 115,
+    rating: 4.7,
+    gender: "qadın",
+    size: "75ml",
+    concentration: "Eau de Parfum",
+    notes: ["Şaftalı", "Vanil", "Jasmin"],
+    inStock: true
+  },
+  {
+    id: "13",
+    name: "Prada Infusion d'Iris",
+    brand: "Prada",
+    description: "Qadınlar üçün yumşaq və çiçəkli ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.2064.jpg",
+    price: 130,
+    rating: 4.5,
+    gender: "qadın",
+    size: "50ml",
+    concentration: "Eau de Parfum",
+    notes: ["İris", "Mandarin", "Sandal ağacı"],
+    inStock: true
+  },
+  {
+    id: "14",
+    name: "Viktor & Rolf Spicebomb",
+    brand: "Viktor & Rolf",
+    description: "Kişilər üçün ədviyyatlı və partlayıcı ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.13857.jpg",
+    price: 120,
+    rating: 4.6,
+    gender: "kişi",
+    size: "90ml",
+    concentration: "Eau de Toilette",
+    notes: ["Darçın", "Qırmızı istiot", "Tütün"],
+    inStock: true
+  },
+  {
+    id: "15",
+    name: "Hermès Un Jardin Sur Le Nil",
+    brand: "Hermès",
+    description: "Uniseks, təravətli və meyvəli ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.18.jpg",
+    price: 145,
+    rating: 4.5,
+    gender: "uniseks",
+    size: "100ml",
+    concentration: "Eau de Toilette",
+    notes: ["Manqo", "Lotus", "Sitra"],
+    inStock: true
+  },
+  {
+    id: "16",
+    name: "Estée Lauder Modern Muse",
+    brand: "Estée Lauder",
+    description: "Qadınlar üçün çiçəkli və müşk qoxusu",
+    image: "https://fimgs.net/mdimg/perfume/375x500.22059.jpg",
+    price: 105,
+    rating: 4.4,
+    gender: "qadın",
+    size: "50ml",
+    concentration: "Eau de Parfum",
+    notes: ["Jasmin", "Paçuli", "Müşk"],
+    inStock: true
+  },
+  {
+    id: "17",
+    name: "Le Labo Another 13",
+    brand: "Le Labo",
+    description: "Uniseks, unikal və müşk qoxulu ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.6333.jpg",
+    price: 250,
+    rating: 4.8,
+    gender: "uniseks",
+    size: "50ml",
+    concentration: "Eau de Parfum",
+    notes: ["Müşk", "Ambra", "Jasmin"],
+    inStock: false
+  },
+  {
+    id: "18",
+    name: "Givenchy Gentleman Boisee",
+    brand: "Givenchy",
+    description: "Kişilər üçün odunsu və isti ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.60673.jpg",
+    price: 130,
+    rating: 4.7,
+    gender: "kişi",
+    size: "100ml",
+    concentration: "Eau de Parfum",
+    notes: ["Kakao", "Sandal ağacı", "İris"],
+    inStock: true
+  },
+  {
+    id: "19",
+    name: "Acqua di Parma Rosa Nobile",
+    brand: "Acqua di Parma",
+    description: "Qadınlar üçün zərif və güllü ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.27975.jpg",
+    price: 155,
+    rating: 4.6,
+    gender: "qadın",
+    size: "100ml",
+    concentration: "Eau de Parfum",
+    notes: ["Qızılgül", "Pion", "Sitra"],
+    inStock: true
+  },
+  {
+    id: "20",
+    name: "Creed Silver Mountain Water",
+    brand: "Creed",
+    description: "Uniseks, təravətli və dağ havası kimi ətir",
+    image: "https://fimgs.net/mdimg/perfume/375x500.472.jpg",
+    price: 340,
+    rating: 4.9,
+    gender: "uniseks",
+    size: "100ml",
+    concentration: "Eau de Parfum",
+    notes: ["Yaşıl çay", "Qara qarağat", "Müşk"],
+    inStock: true
+  }
+]; 
