@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { signUp, signIn } from '../../../lib/auth';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, UserPlus } from 'lucide-react';
 
 const registerSchema = z.object({
   email: z.string().email('Düzgün e-poçt ünvanı daxil edin'),
@@ -54,7 +54,7 @@ export default function Register() {
         } catch (signInErr) {
           console.error('Auto login error:', signInErr);
           // Avtomatik giriş xətası baş verərsə, login səhifəsinə yönləndirmək
-          navigate('/login');
+          navigate('/auth/login');
         }
       }, 1500);
     } catch (err) {
@@ -67,11 +67,11 @@ export default function Register() {
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold">Qeydiyyat</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Qeydiyyat</h2>
           <p className="mt-2 text-gray-600">Yeni hesab yaradın</p>
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-sm">
+        <div className="bg-white p-8 rounded-xl shadow-md">
           {error && (
             <div className="mb-4 p-4 text-sm text-red-600 bg-red-50 rounded-lg">
               {error}
@@ -113,7 +113,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -136,7 +136,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -149,19 +149,22 @@ export default function Register() {
             <button
               type="submit"
               disabled={isSubmitting || success !== null}
-              className="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {isSubmitting ? (
-                <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                'Qeydiyyatdan keç'
+                <>
+                  <UserPlus className="w-5 h-5 mr-2" />
+                  Qeydiyyatdan keç
+                </>
               )}
             </button>
           </form>
 
           <div className="mt-6 text-center text-sm">
             <span className="text-gray-600">Artıq hesabınız var? </span>
-            <Link to="/login" className="text-primary hover:underline font-medium">
+            <Link to="/auth/login" className="text-primary hover:underline font-medium">
               Daxil olun
             </Link>
           </div>

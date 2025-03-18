@@ -24,11 +24,11 @@ export function AppRoutes() {
         
         {/* Auth routes */}
         <Route 
-          path="/login" 
+          path="/auth/login" 
           element={user ? <Navigate to="/" replace /> : <Login />} 
         />
         <Route 
-          path="/register" 
+          path="/auth/register" 
           element={user ? <Navigate to="/" replace /> : <Register />} 
         />
         
@@ -41,6 +41,9 @@ export function AppRoutes() {
             </ProtectedRoute>
           } 
         />
+
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>
   );

@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { supabase } from './supabase';
-import { getCurrentUser } from './auth';
+import { getCurrentUser, signOut as localSignOut } from './auth';
 
 type User = {
   id: string;
@@ -11,12 +11,14 @@ type AuthContextType = {
   user: User;
   isLoading: boolean;
   refreshUser: () => Promise<void>;
+  signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
   refreshUser: async () => {},
+  signOut: async () => {},
 });
 
 export function useAuth() {
@@ -46,6 +48,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      // Try Supabase sign out first
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      // If Supabase fails, try local sign out
+      await localSignOut();
+      
+      setUser(null);
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
     }
   };
 
@@ -81,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isLoading,
     refreshUser,
+    signOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

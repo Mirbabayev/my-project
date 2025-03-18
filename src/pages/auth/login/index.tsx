@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { signIn } from '../../../lib/auth';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, LogIn } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Düzgün e-poçt ünvanı daxil edin'),
@@ -46,11 +46,11 @@ export default function Login() {
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold">Xoş gəlmisiniz!</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Xoş gəlmisiniz!</h2>
           <p className="mt-2 text-gray-600">Hesabınıza daxil olun</p>
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-sm">
+        <div className="bg-white p-8 rounded-xl shadow-md">
           {error && (
             <div className="mb-4 p-4 text-sm text-red-600 bg-red-50 rounded-lg">
               {error}
@@ -86,7 +86,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -99,19 +99,22 @@ export default function Login() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {isSubmitting ? (
-                <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                'Daxil ol'
+                <>
+                  <LogIn className="w-5 h-5 mr-2" />
+                  Daxil ol
+                </>
               )}
             </button>
           </form>
 
           <div className="mt-6 text-center text-sm">
             <span className="text-gray-600">Hesabınız yoxdur? </span>
-            <Link to="/register" className="text-primary hover:underline font-medium">
+            <Link to="/auth/register" className="text-primary hover:underline font-medium">
               Qeydiyyatdan keçin
             </Link>
           </div>
