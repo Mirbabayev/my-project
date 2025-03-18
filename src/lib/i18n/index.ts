@@ -6,19 +6,8 @@ const resources = {
     translation: {
       // Header
       header: {
-        search: 'Axtarış...',
-        cart: 'Səbət',
-        profile: 'Profil',
         login: 'Daxil ol',
-        register: 'Qeydiyyat',
-        products: 'Məhsullar'
-      },
-      
-      // Footer
-      footer: {
-        about: 'Haqqımızda',
-        contact: 'Əlaqə',
-        products: 'Məhsullar'
+        register: 'Qeydiyyat'
       },
       
       // Auth
@@ -29,25 +18,11 @@ const resources = {
         forgotPassword: 'Şifrəni unutmusunuz?'
       },
       
-      // Products
-      products: {
-        sortBy: 'Sırala',
-        filter: 'Filtr',
-        price: 'Qiymət',
-        brand: 'Brend',
-        category: 'Kateqoriya',
-        size: 'Ölçü',
-        addToCart: 'Səbətə əlavə et',
-        outOfStock: 'Stokda yoxdur'
-      },
-      
       // Common
       common: {
         loading: 'Yüklənir...',
         error: 'Xəta baş verdi',
-        retry: 'Yenidən cəhd edin',
-        clearAll: 'Hamısını təmizlə',
-        apply: 'Tətbiq et'
+        retry: 'Yenidən cəhd edin'
       }
     }
   }

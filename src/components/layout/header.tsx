@@ -1,21 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../lib/auth-context';
 import { useTranslation } from 'react-i18next';
-import { ShoppingCart, User, LogOut, LogIn, UserPlus } from 'lucide-react';
+import { LogIn, UserPlus } from 'lucide-react';
 
 export const Header = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { t } = useTranslation();
-  const navigate = useNavigate();
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate('/');
-    } catch (error) {
-      console.error('Çıxış zamanı xəta:', error);
-    }
-  };
 
   return (
     <header className="bg-white shadow-md">
@@ -26,26 +16,12 @@ export const Header = () => {
           </Link>
 
           <nav className="flex items-center space-x-6">
-            <Link to="/products" className="text-gray-600 hover:text-primary">
-              {t('header.products')}
-            </Link>
-            <Link to="/cart" className="text-gray-600 hover:text-primary">
+            {/* Səbət və profil hələlik gizlidir */}
+            {/* <Link to="/cart" className="text-gray-600 hover:text-primary">
               <ShoppingCart className="w-6 h-6" />
-            </Link>
+            </Link> */}
 
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <Link to="/profile" className="text-gray-600 hover:text-primary">
-                  <User className="w-6 h-6" />
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center text-gray-600 hover:text-primary"
-                >
-                  <LogOut className="w-6 h-6" />
-                </button>
-              </div>
-            ) : (
+            {!user && (
               <div className="flex items-center space-x-4">
                 <Link
                   to="/auth/login"
