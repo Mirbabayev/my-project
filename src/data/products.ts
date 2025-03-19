@@ -11,6 +11,8 @@ export interface Product {
   concentration: string;
   notes: string[];
   inStock: boolean;
+  category: string;
+  popularity: number;
 }
 
 export const products: Product[] = [
@@ -26,7 +28,9 @@ export const products: Product[] = [
     size: "60ml",
     concentration: "Elixir",
     notes: ["Qara istiot", "Lavanda", "Vanil"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 98
   },
   {
     id: "2",
@@ -40,7 +44,9 @@ export const products: Product[] = [
     size: "100ml",
     concentration: "Eau de Parfum",
     notes: ["Portağal", "Jasmin", "Paçuli"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 95
   },
   {
     id: "3",
@@ -54,7 +60,9 @@ export const products: Product[] = [
     size: "50ml",
     concentration: "Eau de Parfum",
     notes: ["Kardamom", "Müşk", "Tonka fasulyesi"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 92
   },
   {
     id: "4",
@@ -68,7 +76,9 @@ export const products: Product[] = [
     size: "90ml",
     concentration: "Eau de Parfum",
     notes: ["Qəhvə", "Vanil", "Jasmin"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 88
   },
   {
     id: "5",
@@ -82,7 +92,9 @@ export const products: Product[] = [
     size: "50ml",
     concentration: "Eau de Parfum",
     notes: ["Lavanda", "Vanil", "Sandal ağacı"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 90
   },
   {
     id: "6",
@@ -96,7 +108,9 @@ export const products: Product[] = [
     size: "75ml",
     concentration: "Parfum",
     notes: ["Dəniz notları", "Paçuli", "Tütsü"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 85
   },
   {
     id: "7",
@@ -110,7 +124,9 @@ export const products: Product[] = [
     size: "100ml",
     concentration: "Cologne Intense",
     notes: ["Oud", "Bergamot", "Sitra"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 96
   },
   {
     id: "8",
@@ -124,7 +140,9 @@ export const products: Product[] = [
     size: "50ml",
     concentration: "Eau de Parfum",
     notes: ["Safran", "Dəri", "Bənövşə"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 93
   },
   {
     id: "9",
@@ -138,7 +156,9 @@ export const products: Product[] = [
     size: "100ml",
     concentration: "Eau de Parfum",
     notes: ["Şaftalı", "Qızılgül", "Vanil"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 91
   },
   {
     id: "10",
@@ -152,7 +172,9 @@ export const products: Product[] = [
     size: "100ml",
     concentration: "Eau de Parfum",
     notes: ["Qızılgül", "Zəfəran", "Müşk"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 89
   },
   {
     id: "11",
@@ -166,7 +188,9 @@ export const products: Product[] = [
     size: "100ml",
     concentration: "Eau de Toilette",
     notes: ["Rum", "Tütün", "Vanil"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 91
   },
   {
     id: "12",
@@ -180,7 +204,9 @@ export const products: Product[] = [
     size: "75ml",
     concentration: "Eau de Parfum",
     notes: ["Şaftalı", "Vanil", "Jasmin"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 89
   },
   {
     id: "13",
@@ -194,7 +220,9 @@ export const products: Product[] = [
     size: "50ml",
     concentration: "Eau de Parfum",
     notes: ["İris", "Mandarin", "Sandal ağacı"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 88
   },
   {
     id: "14",
@@ -208,7 +236,9 @@ export const products: Product[] = [
     size: "90ml",
     concentration: "Eau de Toilette",
     notes: ["Darçın", "Qırmızı istiot", "Tütün"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 89
   },
   {
     id: "15",
@@ -222,7 +252,9 @@ export const products: Product[] = [
     size: "100ml",
     concentration: "Eau de Toilette",
     notes: ["Manqo", "Lotus", "Sitra"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 88
   },
   {
     id: "16",
@@ -236,7 +268,9 @@ export const products: Product[] = [
     size: "50ml",
     concentration: "Eau de Parfum",
     notes: ["Jasmin", "Paçuli", "Müşk"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 85
   },
   {
     id: "17",
@@ -250,7 +284,9 @@ export const products: Product[] = [
     size: "50ml",
     concentration: "Eau de Parfum",
     notes: ["Müşk", "Ambra", "Jasmin"],
-    inStock: false
+    inStock: false,
+    category: "parfum",
+    popularity: 93
   },
   {
     id: "18",
@@ -264,7 +300,9 @@ export const products: Product[] = [
     size: "100ml",
     concentration: "Eau de Parfum",
     notes: ["Kakao", "Sandal ağacı", "İris"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 89
   },
   {
     id: "19",
@@ -278,7 +316,9 @@ export const products: Product[] = [
     size: "100ml",
     concentration: "Eau de Parfum",
     notes: ["Qızılgül", "Pion", "Sitra"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 88
   },
   {
     id: "20",
@@ -292,6 +332,8 @@ export const products: Product[] = [
     size: "100ml",
     concentration: "Eau de Parfum",
     notes: ["Yaşıl çay", "Qara qarağat", "Müşk"],
-    inStock: true
+    inStock: true,
+    category: "parfum",
+    popularity: 96
   }
 ]; 

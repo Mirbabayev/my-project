@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Star, Filter, Search, ShoppingBag, X, SlidersHorizontal, ArrowUpDown, Heart } from 'lucide-react';
 import { products } from '../../data/products';
+import { ProductCard } from '../../components/product-card';
 
 // Filtrlər üçün tiplər
 type GenderFilter = 'hamısı' | 'kişi' | 'qadın' | 'uniseks';
@@ -46,14 +47,11 @@ export default function Products() {
     // URL-dən brand parametrini oxu
     const brandParam = searchParams.get('brand');
     if (brandParam) {
-      // Brend adının düzgün halını tap (böyük-kiçik hərflərə həssas olmaması üçün)
       const exactBrand = allBrands.find(
         b => b.toLowerCase() === brandParam.toLowerCase()
       );
       if (exactBrand) {
         setBrandFilters([exactBrand]);
-        // Filter panelini avtomatik açmayaq
-        // setShowAdvancedFilters(true);
       }
     }
 
@@ -73,21 +71,16 @@ export default function Products() {
     const familyParam = searchParams.get('family');
     if (familyParam && fragranceFamilies.includes(familyParam)) {
       setFamilyFilters([familyParam]);
-      // Filter panelini avtomatik açmayaq
-      // setShowAdvancedFilters(true);
     }
     
     // URL-dən not parametrini oxu
     const noteParam = searchParams.get('note');
     if (noteParam) {
-      // Not adının düzgün halını tap (böyük-kiçik hərflərə həssas olmaması üçün)
       const exactNote = allNotes.find(
         n => n.toLowerCase() === noteParam.toLowerCase()
       );
       if (exactNote) {
         setNoteFilters([exactNote]);
-        // Filter panelini avtomatik açmayaq
-        // setShowAdvancedFilters(true);
       }
     }
   }, [searchParams, allNotes, allBrands]);
@@ -96,27 +89,22 @@ export default function Products() {
   useEffect(() => {
     const params = new URLSearchParams();
     
-    // Axtarış parametri
     if (searchQuery) {
       params.set('search', searchQuery);
     }
     
-    // Cins parametri
     if (genderFilter !== 'hamısı') {
       params.set('gender', genderFilter);
     }
     
-    // Brend parametri - sadəcə bir brend varsa
     if (brandFilters.length === 1) {
       params.set('brand', brandFilters[0]);
     }
     
-    // Ətir qrupu parametri - sadəcə bir qrup varsa
     if (familyFilters.length === 1) {
       params.set('family', familyFilters[0]);
     }
     
-    // Not parametri - sadəcə bir not varsa
     if (noteFilters.length === 1) {
       params.set('note', noteFilters[0]);
     }
@@ -187,16 +175,12 @@ export default function Products() {
       );
     }
     
-    // Qrup filter - notes massivindən qrup adları axtarmaq
+    // Qrup filter
     if (familyFilters.length > 0) {
       filtered = filtered.filter(product => {
-        // Qeyd: Məhsul haqqında məlumatlarda məhsulun hansı qrupa aid olması açıq qeyd edilmədiyi üçün
-        // biz notlar əsasında məhsulu müəyyən qruplara aid edə bilərik
         const productNotes = product.notes.map(note => note.toLowerCase());
         return familyFilters.some(family => {
           const familyLower = family.toLowerCase();
-          // Şərti qayda: Əgər note-larda qrup adına oxşar söz varsa, məhsul o qrupa aiddir
-          // Bu real məlumat olmadığı üçün sadə nümunədir, gerçəkdə daha dəqiq məlumat lazımdır
           switch (familyLower) {
             case 'çiçəkli':
               return productNotes.some(note => ['qızılgül', 'jasmin', 'çiçək', 'bənövşə', 'yasəmən', 'pion'].some(f => note.includes(f)));
@@ -233,7 +217,6 @@ export default function Products() {
         filtered.sort((a, b) => b.rating - a.rating);
         break;
       default:
-        // Default sıralama (ID üzrə)
         filtered.sort((a, b) => parseInt(a.id) - parseInt(b.id));
     }
 
@@ -310,58 +293,6 @@ export default function Products() {
           </select>
         </div>
       </div>
-
-      {/* Aktiv filtrlər sətri - silinəcək */}
-      {/* {isFilterActive && (
-        <div className="bg-white p-4 rounded-lg shadow-sm mb-6 flex flex-wrap justify-between items-center">
-          <div className="flex-1">
-            <div className="flex flex-wrap gap-2">
-              {brandFilters.map(brand => (
-                <div key={brand} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
-                  <span className="text-primary font-medium">{brand}</span>
-                  <button onClick={() => toggleFilter(brand, brandFilters, setBrandFilters)} className="ml-2 text-primary">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-              
-              {concentrationFilters.map(concentration => (
-                <div key={concentration} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
-                  <span className="text-primary font-medium">{concentration}</span>
-                  <button onClick={() => toggleFilter(concentration, concentrationFilters, setConcentrationFilters)} className="ml-2 text-primary">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-              
-              {noteFilters.map(note => (
-                <div key={note} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
-                  <span className="text-primary font-medium">{note}</span>
-                  <button onClick={() => toggleFilter(note, noteFilters, setNoteFilters)} className="ml-2 text-primary">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-              
-              {familyFilters.map(family => (
-                <div key={family} className="flex items-center bg-primary/10 px-3 py-1 rounded-full text-sm">
-                  <span className="text-primary font-medium">{family}</span>
-                  <button onClick={() => toggleFilter(family, familyFilters, setFamilyFilters)} className="ml-2 text-primary">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <button 
-            onClick={clearAllFilters}
-            className="text-primary hover:text-primary/80 text-sm flex items-center bg-primary/5 px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-colors ml-4 whitespace-nowrap"
-          >
-            <X className="w-4 h-4 mr-1" />
-            Hamısını təmizlə
-          </button>
-        </div>
-      )} */}
 
       {/* Ətraflı filtrlər - açılıb bağlanan */}
       {showAdvancedFilters && (
@@ -523,57 +454,10 @@ export default function Products() {
             </div>
           )}
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
+          {/* Məhsullar grid */}
+          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product) => (
-              <Link 
-                to={`/products/${product.id}`} 
-                key={product.id}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group hover:-translate-y-1"
-              >
-                <div className="relative overflow-hidden bg-gray-50 h-52 flex items-center justify-center p-4">
-                  <img
-                    src={product.image}
-                    alt={`${product.brand} ${product.name} ətri`}
-                    title={`${product.brand} ${product.name}`}
-                    className="max-h-44 max-w-[80%] h-auto w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "https://dummyimage.com/200x200/f0f0f0/333333.png&text=Şəkil+yoxdur";
-                      target.onerror = null; // Prevent infinite fallback loop
-                    }}
-                  />
-                  {!product.inStock && (
-                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                      Bitib
-                    </div>
-                  )}
-                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100">
-                      <Heart className="w-4 h-4 text-gray-600" />
-                    </button>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="text-sm font-medium text-primary mb-1">{product.brand}</h3>
-                  <h2 className="font-bold text-gray-800 text-lg mb-2 line-clamp-1">{product.name}</h2>
-                  
-                  <div className="flex items-center mb-2">
-                    <div className="flex items-center mr-2">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="ml-1 text-sm">{product.rating}</span>
-                    </div>
-                    <span className="text-sm text-gray-500 capitalize">{product.gender} • {product.size}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mt-4">
-                    <span className="font-bold text-lg text-gray-900">{product.price} ₼</span>
-                    <button className="flex items-center justify-center bg-primary text-white rounded-full w-8 h-8 hover:bg-primary/90 transition-colors">
-                      <ShoppingBag className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </Link>
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </>
