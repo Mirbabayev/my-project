@@ -37,7 +37,9 @@ export default function Products() {
   const allNotes = useMemo(() => {
     const notesSet = new Set<string>();
     products.forEach(product => {
-      product.notes.forEach(note => notesSet.add(note));
+      product.notes.top.forEach(note => notesSet.add(note));
+      product.notes.middle.forEach(note => notesSet.add(note));
+      product.notes.base.forEach(note => notesSet.add(note));
     });
     return [...notesSet];
   }, []);
@@ -171,14 +173,22 @@ export default function Products() {
     // Notlar filter
     if (noteFilters.length > 0) {
       filtered = filtered.filter(product => 
-        product.notes.some(note => noteFilters.includes(note))
+        product.notes.top.some(note => noteFilters.includes(note)) ||
+        product.notes.middle.some(note => noteFilters.includes(note)) ||
+        product.notes.base.some(note => noteFilters.includes(note))
       );
     }
     
     // Qrup filter
     if (familyFilters.length > 0) {
       filtered = filtered.filter(product => {
-        const productNotes = product.notes.map(note => note.toLowerCase());
+        // Bütün notları birləşdir
+        const productNotes = [
+          ...product.notes.top.map(note => note.toLowerCase()),
+          ...product.notes.middle.map(note => note.toLowerCase()),
+          ...product.notes.base.map(note => note.toLowerCase())
+        ];
+        
         return familyFilters.some(family => {
           const familyLower = family.toLowerCase();
           switch (familyLower) {
@@ -328,18 +338,17 @@ export default function Products() {
                 <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                 Brendlər
               </h3>
-              <div className="max-h-40 overflow-y-auto pr-2 space-y-1">
+              <div className="max-h-40 overflow-y-auto pr-2">
                 {allBrands.map((brand) => (
-                  <div key={brand} className="mb-1 flex items-center hover:bg-gray-50 rounded px-1">
+                  <label key={brand} className="flex items-center py-1.5 px-2 rounded cursor-pointer mb-1.5 hover:bg-accent/20">
                     <input 
                       type="checkbox" 
-                      id={`brand-${brand}`}
+                      className="mr-2 h-4 w-4 accent-primary rounded"
                       checked={brandFilters.includes(brand)}
                       onChange={() => toggleFilter(brand, brandFilters, setBrandFilters)}
-                      className="mr-2 accent-primary h-4 w-4" 
                     />
-                    <label htmlFor={`brand-${brand}`} className="text-sm cursor-pointer py-1">{brand}</label>
-                  </div>
+                    <span className="text-gray-700 text-sm font-medium">{brand}</span>
+                  </label>
                 ))}
               </div>
             </div>
@@ -350,18 +359,17 @@ export default function Products() {
                 <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                 Konsentrasiya
               </h3>
-              <div className="space-y-1">
+              <div className="max-h-40 overflow-y-auto pr-2">
                 {allConcentrations.map((concentration) => (
-                  <div key={concentration} className="mb-1 flex items-center hover:bg-gray-50 rounded px-1">
+                  <label key={concentration} className="flex items-center py-1.5 px-2 rounded cursor-pointer mb-1.5 hover:bg-accent/20">
                     <input 
                       type="checkbox" 
-                      id={`concentration-${concentration}`}
+                      className="mr-2 h-4 w-4 accent-primary rounded"
                       checked={concentrationFilters.includes(concentration)}
                       onChange={() => toggleFilter(concentration, concentrationFilters, setConcentrationFilters)}
-                      className="mr-2 accent-primary h-4 w-4" 
                     />
-                    <label htmlFor={`concentration-${concentration}`} className="text-sm cursor-pointer py-1">{concentration}</label>
-                  </div>
+                    <span className="text-gray-700 text-sm font-medium">{concentration}</span>
+                  </label>
                 ))}
               </div>
             </div>
@@ -372,18 +380,17 @@ export default function Products() {
                 <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                 Notlar
               </h3>
-              <div className="max-h-40 overflow-y-auto pr-2 space-y-1">
+              <div className="max-h-40 overflow-y-auto pr-2">
                 {allNotes.map((note) => (
-                  <div key={note} className="mb-1 flex items-center hover:bg-gray-50 rounded px-1">
-                    <input 
-                      type="checkbox" 
-                      id={`note-${note}`}
+                  <label key={note} className="flex items-center py-1.5 px-2 rounded cursor-pointer mb-1.5 hover:bg-accent/20">
+                    <input
+                      type="checkbox"
+                      className="mr-2 h-4 w-4 accent-primary rounded"
                       checked={noteFilters.includes(note)}
                       onChange={() => toggleFilter(note, noteFilters, setNoteFilters)}
-                      className="mr-2 accent-primary h-4 w-4" 
                     />
-                    <label htmlFor={`note-${note}`} className="text-sm cursor-pointer py-1">{note}</label>
-                  </div>
+                    <span className="text-gray-700 text-sm font-medium">{note}</span>
+                  </label>
                 ))}
               </div>
             </div>
