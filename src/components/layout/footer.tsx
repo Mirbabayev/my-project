@@ -52,12 +52,12 @@ export const Footer = () => {
           <div>
             <Link to="/" className="inline-block mb-6">
               <span className="text-2xl font-extrabold">
-                <span className="text-primary">Easy</span>
-                <span className="text-gray-800">Parfum</span>
+                <span className="text-primary">Parfum</span>
+                <span className="text-gray-800">Bar</span>
               </span>
             </Link>
             <p className="text-gray-600 text-sm mb-6">
-              EasyParfum - Azərbaycanın premium parfümeriya məhsulları platforması. Bütün məhsullar 100% orijinaldır və rəsmi distribütorlardan tədarük olunur.
+              ParfumBar - Azərbaycanın premium parfümeriya məhsulları platforması. Bütün məhsullar 100% orijinaldır və rəsmi distribütorlardan tədarük olunur.
             </p>
             <div className="flex space-x-4">
               <a
@@ -147,7 +147,7 @@ export const Footer = () => {
         <div className="border-t border-gray-200 pt-8">
           <div className="text-center">
             <p className="text-sm text-gray-500">
-              © {new Date().getFullYear()} EasyParfum. Bütün hüquqlar qorunur.
+              © {new Date().getFullYear()} ParfumBar. Bütün hüquqlar qorunur.
             </p>
           </div>
         </div>

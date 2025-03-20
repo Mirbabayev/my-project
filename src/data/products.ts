@@ -1219,5 +1219,5 @@ export const products: Product[] = [
     "inStock": true,
     "category": "parfum",
     "popularity": 94
-  }
+  } // Add the new products here
 ]; 

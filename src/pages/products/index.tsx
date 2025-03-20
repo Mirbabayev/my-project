@@ -359,7 +359,7 @@ export default function Products() {
                 <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                 Konsentrasiya
               </h3>
-              <div className="max-h-40 overflow-y-auto pr-2">
+              <div className="space-y-1">
                 {allConcentrations.map((concentration) => (
                   <label key={concentration} className="flex items-center py-1.5 px-2 rounded cursor-pointer mb-1.5 hover:bg-accent/20">
                     <input 

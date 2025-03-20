@@ -7,25 +7,22 @@ import { ProductCard } from '../../components/product-card';
 // Yeni hero slide
 const heroSlides = [
   {
-    id: 1,
-    title: "Ətirlərin Sirli Dünyası",
-    subtitle: "Sizin üçün ən gözəl qoxuları kəşf edin",
-    image: "https://images.unsplash.com/photo-1612207826827-ebfc4ad73166?auto=format&fit=crop&w=1400&q=80",
-    ctaText: "İndi kəşf edin"
+    title: "Prada Luna Rossa Black",
+    subtitle: "Experience the elegance of Prada",
+    image: "https://example.com/images/prada-luna-rossa-black.jpg",
+    cta: "Discover Now"
   },
   {
-    id: 2,
-    title: "Premium Parfümler",
-    subtitle: "Sizin stilinizi tamamlayan ətirlər",
-    image: "https://images.unsplash.com/photo-1601295452898-78a8dd904633?auto=format&fit=crop&w=1400&q=80",
-    ctaText: "Kolleksiyaya baxın"
+    title: "Jean Paul Gaultier Le Male Elixir",
+    subtitle: "A bold fragrance for the modern man",
+    image: "https://example.com/images/jean-paul-gaultier-le-male-elixir.jpg",
+    cta: "View Collection"
   },
   {
-    id: 3,
-    title: "Mövsümi Kolleksiyalar",
-    subtitle: "Hər mövsümə uyğun ətir seçimləri",
-    image: "https://images.unsplash.com/photo-1615036228987-50ee08bd7ff0?auto=format&fit=crop&w=1400&q=80",
-    ctaText: "Mövsümi ətirlər"
+    title: "Floris London",
+    subtitle: "Timeless elegance from London",
+    image: "https://example.com/images/floris-london.jpg",
+    cta: "Seasonal Fragrances"
   }
 ];
 
@@ -65,8 +62,44 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeGender, setActiveGender] = useState('all');
   const [visibleProducts, setVisibleProducts] = useState<typeof products>([]);
-  const [animateHero, setAnimateHero] = useState(false);
+  const [animateHero, setAnimateHero] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState(true);
+  
+  // Şəkillərin yüklənməsini yoxla
+  useEffect(() => {
+    const loadImages = async () => {
+      const imagePromises = heroSlides.map(slide => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.src = slide.image;
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+      });
+
+      try {
+        await Promise.all(imagePromises);
+        setImagesLoaded(true);
+      } catch (error) {
+        console.error('Error loading images:', error);
+      }
+    };
+
+    loadImages();
+  }, []);
+  
+  // Parallax effekti üçün scroll pozisiyasını izləyirik
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setScrollPosition(scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   // CSS stili React-in içində təyin etmək üçün 
   const marqueeStyle = {
@@ -110,9 +143,9 @@ export default function Home() {
       setTimeout(() => {
         setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
         setAnimateHero(true);
-      }, 300);
-    }, 6000);
-    setAnimateHero(true);
+      }, 5000);
+    }, 5000);
+    
     return () => clearInterval(interval);
   }, []);
   
@@ -160,36 +193,49 @@ export default function Home() {
   return (
     <div className="bg-white">
       {/* Hero section */}
-      <section className="relative overflow-hidden shadow-md">
+      <section className="relative overflow-hidden shadow-lg">
         <div 
-          className={`relative h-[600px] transition-opacity duration-300 ${animateHero ? 'opacity-100' : 'opacity-0'}`}
+          className={`relative h-[350px] md:h-[350px] transition-opacity duration-500 ${animateHero ? 'opacity-100' : 'opacity-0'}`}
           style={{
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${heroSlides[currentSlide].image})`,
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url(${heroSlides[currentSlide].image})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center'
+            backgroundPosition: 'center',
+            transition: 'all 0.5s ease-in-out',
+            borderRadius: '0 0 30px 30px',
+            margin: '0 20px'
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-black/40 to-transparent">
+          {/* Parlaq işıq effekti */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-accent/30 mix-blend-overlay rounded-[30px]"></div>
+          
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent rounded-[30px]">
             <div className="container mx-auto px-4 h-full flex items-center">
-              <div className="max-w-2xl text-white">
-                <h1 className={`text-5xl md:text-6xl font-bold mb-6 transition-transform duration-500 ${animateHero ? 'translate-x-0' : '-translate-x-10'}`}>
+              <div className="max-w-md md:max-w-xl text-white">
+                <span className={`inline-block bg-primary/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium mb-3 transition-all duration-500 delay-200 ${animateHero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                  New Collection
+                </span>
+                <h1 className={`text-3xl md:text-5xl font-bold mb-4 transition-transform duration-500 ${animateHero ? 'translate-x-0' : '-translate-x-10'}`}>
                   {heroSlides[currentSlide].title}
                 </h1>
-                <p className={`text-xl mb-8 transition-transform duration-500 delay-100 ${animateHero ? 'translate-x-0' : '-translate-x-10'}`}>
+                <p className={`text-lg mb-6 transition-transform duration-500 delay-100 ${animateHero ? 'translate-x-0' : '-translate-x-10'}`}>
                   {heroSlides[currentSlide].subtitle}
                 </p>
                 <Link
                   to="/products"
-                  className={`parfumbar-btn inline-block transition-all duration-500 delay-200 ${animateHero ? 'opacity-100' : 'opacity-0'}`}
+                  className={`parfumbar-btn inline-block transition-all duration-500 delay-200 ${animateHero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                 >
-                  {heroSlides[currentSlide].ctaText}
+                  {heroSlides[currentSlide].cta}
                 </Link>
               </div>
             </div>
           </div>
           
+          {/* Parlaq effektlər */}
+          <div className="absolute -top-[30%] -right-[10%] w-[40%] h-[70%] rounded-full bg-primary/10 blur-3xl mix-blend-overlay pointer-events-none"></div>
+          <div className="absolute -bottom-[20%] -left-[10%] w-[30%] h-[50%] rounded-full bg-accent/10 blur-3xl mix-blend-overlay pointer-events-none"></div>
+          
           {/* Slayder naviqasiyası */}
-          <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-2">
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
             {heroSlides.map((_, index) => (
               <button
                 key={index}
@@ -200,8 +246,10 @@ export default function Home() {
                     setAnimateHero(true);
                   }, 300);
                 }}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  currentSlide === index ? 'bg-primary scale-150' : 'bg-white/70'
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  currentSlide === index 
+                    ? 'bg-primary scale-150 w-6' 
+                    : 'bg-white/70 hover:bg-primary/50'
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -211,17 +259,17 @@ export default function Home() {
           {/* Slayder kontrolları */}
           <button 
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/20 hover:bg-primary/80 p-3 rounded-full text-white transition-colors"
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/10 hover:bg-primary/80 p-2 rounded-full text-white transition-colors backdrop-blur-sm"
             aria-label="Previous slide"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
           <button 
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/20 hover:bg-primary/80 p-3 rounded-full text-white transition-colors"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/10 hover:bg-primary/80 p-2 rounded-full text-white transition-colors backdrop-blur-sm"
             aria-label="Next slide"
           >
-            <ArrowRight className="w-6 h-6" />
+            <ArrowRight className="w-5 h-5" />
           </button>
         </div>
       </section>

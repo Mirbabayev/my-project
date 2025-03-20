@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Star, Heart, ShoppingBag, Eye } from 'lucide-react';
 import { Product } from '../data/products';
 import { cn } from '../lib/utils';
@@ -11,6 +12,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -39,6 +41,13 @@ export function ProductCard({ product }: ProductCardProps) {
     // Reset position with animation when mouse leaves
     setPosition({ x: 0, y: 0 });
   };
+  
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Use navigate from react-router-dom to programmatically navigate
+    navigate(`/products/${product.id}`);
+  };
 
   return (
     <div 
@@ -47,14 +56,12 @@ export function ProductCard({ product }: ProductCardProps) {
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={handleCardClick}
       style={{ 
         transform: isHovering ? `perspective(1000px) rotateX(${-position.y}deg) rotateY(${position.x}deg) scale3d(1.02, 1.02, 1.02)` : 'perspective(1000px) rotateX(0deg) rotateY(0deg)',
         transition: isHovering ? 'transform 0.1s ease' : 'transform 0.3s ease-out'
       }}
     >
-      {/* Direkt naviqasiya üçün HTML link */}
-      <a href={`/products/${product.id}`} className="absolute inset-0 z-[5]" aria-label={`${product.name} məhsulunun detallarına bax`} />
-      
       {/* Şəkil konteyner */}
       <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gradient-to-br from-gray-50 to-gray-100">
         {/* Favori düyməsi */}

@@ -4,20 +4,7 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    {
-      name: 'spa-fallback',
-      configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-          if (req.url.includes('/products/') && !req.url.includes('.')) {
-            req.url = '/';
-          }
-          next();
-        });
-      }
-    }
-  ],
+  plugins: [react()],
   optimizeDeps: {
     exclude: ['lucide-react'],
   },

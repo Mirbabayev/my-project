@@ -270,7 +270,7 @@ const ProductDetails = () => {
           <div className="bg-white p-5 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md relative overflow-hidden">
             <div className="absolute top-0 left-0 w-2 h-full bg-yellow-400"></div>
             <div className="pl-3">
-              <h3 className="text-base font-medium text-gray-700 mb-3">Üst Notlar</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Üst Notlar</h3>
               <div className="flex flex-wrap gap-2 mb-4">
                 {product.notes.top.map((note, index) => (
                   <span 
@@ -290,7 +290,7 @@ const ProductDetails = () => {
           <div className="bg-white p-5 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md relative overflow-hidden">
             <div className="absolute top-0 left-0 w-2 h-full bg-primary"></div>
             <div className="pl-3">
-              <h3 className="text-base font-medium text-gray-700 mb-3">Orta Notlar</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Orta Notlar</h3>
               <div className="flex flex-wrap gap-2 mb-4">
                 {product.notes.middle.map((note, index) => (
                   <span 
@@ -310,7 +310,7 @@ const ProductDetails = () => {
           <div className="bg-white p-5 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md relative overflow-hidden">
             <div className="absolute top-0 left-0 w-2 h-full bg-gray-700"></div>
             <div className="pl-3">
-              <h3 className="text-base font-medium text-gray-700 mb-3">Baza Notlar</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Baza Notlar</h3>
               <div className="flex flex-wrap gap-2 mb-4">
                 {product.notes.base.map((note, index) => (
                   <span 
