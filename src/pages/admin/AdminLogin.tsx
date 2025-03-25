@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, User, UserCircle, ShieldCheck } from 'lucide-react';
+
+// Rol tipi
+type UserRole = 'admin' | 'vendor' | 'user';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole>('admin');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+
+  // Əgər istifadəçi artıq giriş edibsə, admin panelə yönləndir
+  useEffect(() => {
+    if (user) {
+      navigate('/admin');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +28,8 @@ const AdminLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      // Seçilmiş rolü ötürürük
+      await login(email, password, selectedRole);
       navigate('/admin');
     } catch (err) {
       setError('Email və ya şifrə yanlışdır');
@@ -80,6 +92,43 @@ const AdminLogin: React.FC = () => {
               </div>
             </div>
 
+            {/* Rol seçimi */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Giriş rolu seçin
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole('admin')}
+                  className={`flex items-center justify-center px-4 py-3 rounded-lg border transition-all ${
+                    selectedRole === 'admin'
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      : 'border-gray-300 hover:border-indigo-300 hover:bg-gray-50'
+                  }`}
+                >
+                  <ShieldCheck className={`h-5 w-5 mr-2 ${
+                    selectedRole === 'admin' ? 'text-indigo-600' : 'text-gray-500'
+                  }`} />
+                  <span>Admin</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole('vendor')}
+                  className={`flex items-center justify-center px-4 py-3 rounded-lg border transition-all ${
+                    selectedRole === 'vendor'
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      : 'border-gray-300 hover:border-indigo-300 hover:bg-gray-50'
+                  }`}
+                >
+                  <UserCircle className={`h-5 w-5 mr-2 ${
+                    selectedRole === 'vendor' ? 'text-indigo-600' : 'text-gray-500'
+                  }`} />
+                  <span>Satıcı</span>
+                </button>
+              </div>
+            </div>
+
             {/* Xəta mesajı */}
             {error && (
               <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm">
@@ -103,8 +152,8 @@ const AdminLogin: React.FC = () => {
             {/* Əlavə məlumat */}
             <div className="text-center text-sm text-gray-600">
               <p>Test məlumatları:</p>
-              <p>Email: admin@example.com</p>
-              <p>Şifrə: admin123</p>
+              <p>Email: {selectedRole === 'admin' ? 'admin@example.com' : 'vendor@example.com'}</p>
+              <p>Şifrə: {selectedRole === 'admin' ? 'admin123' : 'vendor123'}</p>
             </div>
           </form>
         </div>

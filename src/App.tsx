@@ -25,6 +25,13 @@ import Dashboard from './pages/admin/Dashboard';
 import { AdminProducts } from './pages/admin/AdminProducts';
 import AdminBrands from './pages/admin/AdminBrands';
 import AdminBlog from './pages/admin/AdminBlog';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminCustomers from './pages/admin/AdminCustomers';
+import AdminOrders from './pages/admin/AdminOrders';
+import ProtectedRoute from './components/ProtectedRoute';
+import Unauthorized from './pages/Unauthorized';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const location = useLocation();
@@ -35,6 +42,7 @@ function App() {
         <CartProvider>
           <WishlistProvider>
             <ScrollToTop />
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
             <Routes location={location}>
               {/* Public Routes */}
               <Route path="/" element={
@@ -115,7 +123,13 @@ function App() {
                 </Layout>
               } />
 
-              {/* Admin Routes */}
+              {/* İcazə səhifəsi */}
+              <Route 
+                path="/unauthorized" 
+                element={<Unauthorized />} 
+              />
+
+              {/* Admin Login Route */}
               <Route path="/admin/login" element={
                 <Layout>
                   <PageTransition>
@@ -123,11 +137,25 @@ function App() {
                   </PageTransition>
                 </Layout>
               } />
+
+              {/* Admin Panel Routes - Protected */}
               <Route path="/admin" element={<AdminLayout />}>
+                {/* Dashboard - Bütün rollar üçün */}
                 <Route index element={<Dashboard />} />
-                <Route path="products" element={<AdminProducts />} />
-                <Route path="brands" element={<AdminBrands />} />
-                <Route path="blog" element={<AdminBlog />} />
+
+                {/* Satıcı və Admin üçün - Məhsul və Sifariş əməliyyatları */}
+                <Route element={<ProtectedRoute allowedRoles={['admin', 'vendor']} />}>
+                  <Route path="products" element={<AdminProducts />} />
+                  <Route path="orders" element={<AdminOrders />} />
+                </Route>
+
+                {/* Yalnız Admin üçün - digər əməliyyatlar */}
+                <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                  <Route path="brands" element={<AdminBrands />} />
+                  <Route path="blog" element={<AdminBlog />} />
+                  <Route path="customers" element={<AdminCustomers />} /> 
+                  <Route path="settings" element={<AdminSettings />} />
+                </Route>
               </Route>
 
               {/* 404 Route */}

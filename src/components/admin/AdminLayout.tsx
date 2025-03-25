@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
   Package,
@@ -16,8 +17,27 @@ import {
   Globe,
   LogOut,
   User,
-  ChevronRight
+  ChevronRight,
+  AlertOctagon
 } from 'lucide-react';
+
+// Role-a görə naviqasiya obyekti
+const roleBasedNavigation = {
+  admin: [
+    { path: '/admin', icon: LayoutDashboard, label: 'dashboard' },
+    { path: '/admin/products', icon: Package, label: 'products' },
+    { path: '/admin/brands', icon: Tags, label: 'brands' },
+    { path: '/admin/blog', icon: FileText, label: 'blog' },
+    { path: '/admin/orders', icon: ShoppingCart, label: 'orders' },
+    { path: '/admin/customers', icon: Users, label: 'customers' },
+    { path: '/admin/settings', icon: Settings, label: 'settings' }
+  ],
+  vendor: [
+    { path: '/admin', icon: LayoutDashboard, label: 'dashboard' },
+    { path: '/admin/products', icon: Package, label: 'products' },
+    { path: '/admin/orders', icon: ShoppingCart, label: 'orders' }
+  ]
+};
 
 interface AdminLayoutProps {
   children?: React.ReactNode;
@@ -27,6 +47,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage, t } = useLanguage();
+  const { user, logout, isAdmin, isVendor } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
@@ -36,6 +57,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const languageDropdownRef = useRef<HTMLDivElement>(null);
   const notificationsDropdownRef = useRef<HTMLDivElement>(null);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Auth olmayan istifadəçiləri login səhifəsinə yönləndirmək
+  useEffect(() => {
+    if (!user) {
+      navigate('/admin/login');
+    }
+  }, [user, navigate]);
+
+  // Rollara görə naviqasiya elemenlərini təyin edirik
+  const navigationItems = isAdmin 
+    ? roleBasedNavigation.admin 
+    : isVendor 
+      ? roleBasedNavigation.vendor
+      : [];
 
   // Klikdən kənar bağlanma effekti
   useEffect(() => {
@@ -71,20 +106,23 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     };
   }, [isLanguageMenuOpen, isNotificationsOpen, isProfileMenuOpen]);
 
-  const navigationItems = [
-    { path: '/admin', icon: LayoutDashboard, label: 'dashboard' },
-    { path: '/admin/products', icon: Package, label: 'products' },
-    { path: '/admin/brands', icon: Tags, label: 'brands' },
-    { path: '/admin/blog', icon: FileText, label: 'blog' },
-    { path: '/admin/orders', icon: ShoppingCart, label: 'orders' },
-    { path: '/admin/customers', icon: Users, label: 'customers' },
-    { path: '/admin/settings', icon: Settings, label: 'settings' }
-  ];
-
   const handleLogout = () => {
     // Çıxış funksiyası
+    logout();
     navigate('/admin/login');
   };
+
+  // İstifadəçi olmadığı halda loading göstər
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-700">Yüklənir...</h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -130,6 +168,18 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Link>
               ))}
             </div>
+            
+            {/* Rol Bildirişi */}
+            {isSidebarOpen && (
+              <div className="mt-6 px-4 py-3">
+                <div className="bg-gray-800 rounded-lg px-3 py-2 flex items-center">
+                  <AlertOctagon size={16} className="text-indigo-400 mr-2" />
+                  <span className="text-sm text-gray-300">
+                    {isAdmin ? 'Admin Rolu' : isVendor ? 'Satıcı Rolu' : 'Məhdud Giriş'}
+                  </span>
+                </div>
+              </div>
+            )}
             
             {/* Bildiriş düyməsi */}
             <div ref={notificationsDropdownRef} className="mt-6">
@@ -255,32 +305,47 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   >
                     <User size={20} />
                     <div className="ml-3 text-left">
-                      <div className="text-sm font-medium text-gray-300">Admin</div>
-                      <div className="text-xs text-gray-400">admin@example.com</div>
+                      <span className="block text-sm font-medium">{user?.name}</span>
+                      <span className="block text-xs text-gray-500">{user?.email}</span>
                     </div>
                     <ChevronRight size={16} className={`ml-auto transform transition-transform duration-300 ${isProfileMenuOpen ? 'rotate-90' : ''}`} />
                   </button>
                   
-                  <div className={`mt-2 overflow-hidden transition-all duration-300 ${isProfileMenuOpen ? 'max-h-24' : 'max-h-0'}`}>
+                  <div className={`mt-2 overflow-hidden transition-all duration-300 ${isProfileMenuOpen ? 'max-h-60' : 'max-h-0'}`}>
                     <div className="bg-gray-800 rounded-lg">
+                      <Link
+                        to="/admin/profile"
+                        className="flex items-center w-full px-4 py-3 text-left rounded-t-lg text-gray-300 hover:bg-gray-700 hover:text-white"
+                      >
+                        <User size={16} className="mr-3" />
+                        Profil
+                      </Link>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center w-full px-4 py-3 text-left text-gray-300 hover:bg-gray-700 rounded-lg"
+                        className="flex items-center w-full px-4 py-3 text-left rounded-b-lg text-gray-300 hover:bg-gray-700 hover:text-white"
                       >
-                        <LogOut size={18} className="mr-3" />
-                        {t('logout')}
+                        <LogOut size={16} className="mr-3" />
+                        Çıxış
                       </button>
                     </div>
                   </div>
                 </div>
               ) : (
-                <button
-                  onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                  className="flex justify-center items-center w-full p-3 my-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white"
-                  title="Profil"
-                >
-                  <User size={20} />
-                </button>
+                <div className="p-2">
+                  <button
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                    className="flex justify-center items-center w-full p-3 my-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white"
+                  >
+                    <User size={20} />
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="flex justify-center items-center w-full p-3 my-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white"
+                    title="Çıxış"
+                  >
+                    <LogOut size={20} />
+                  </button>
+                </div>
               )}
             </div>
           </nav>
@@ -288,158 +353,52 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <div
-        className={`transition-all duration-300 ${
-          isSidebarOpen ? 'ml-64' : 'ml-20'
-        }`}
-      >
+      <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
         {/* Top Bar */}
-        <header className="bg-white shadow-sm">
-          <div className="flex items-center justify-between h-16 px-6">
-            <button
-              className="lg:hidden p-2 text-gray-600 hover:text-gray-900"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            >
-              {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-            
-            <div className="text-xl font-medium text-gray-800">
-              {navigationItems.find(item => location.pathname === item.path)?.label && t(navigationItems.find(item => location.pathname === item.path)?.label || '')}
+        <header className="bg-white h-16 shadow px-4 flex items-center sticky top-0 z-30">
+          <div className="flex-1 flex items-center">
+            <h1 className="text-xl font-semibold text-gray-800">
+              {location.pathname === '/admin' && t('dashboard')}
+              {location.pathname === '/admin/products' && t('products')}
+              {location.pathname === '/admin/brands' && t('brands')}
+              {location.pathname === '/admin/blog' && t('blog')}
+              {location.pathname === '/admin/orders' && t('orders')}
+              {location.pathname === '/admin/customers' && t('customers')}
+              {location.pathname === '/admin/settings' && t('settings')}
+              {location.pathname === '/admin/profile' && 'Profil'}
+            </h1>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <button
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 relative"
+              >
+                <Bell size={20} />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              </button>
             </div>
-
-            <div className="w-10"> {/* Boş sahə tarazlıq üçün */}
+            
+            <div className="relative">
+              <button
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                className="flex items-center text-gray-700 hover:text-gray-900"
+              >
+                <div className="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center mr-2">
+                  {user?.name?.charAt(0) || 'U'}
+                </div>
+                <span className="font-medium hidden md:inline-block">{user?.name}</span>
+              </button>
             </div>
           </div>
         </header>
 
-        {/* Dil seçimi drop-down (kiçik sidebar vəziyyətində) */}
-        {isLanguageMenuOpen && !isSidebarOpen && (
-          <div 
-            className="fixed left-20 top-[120px] bg-gray-800 rounded-lg shadow-lg py-1 z-50 w-48 animate-slideIn"
-          >
-            <button
-              onClick={() => {
-                setLanguage('az');
-                setIsLanguageMenuOpen(false);
-              }}
-              className={`flex items-center w-full px-4 py-3 text-left hover:bg-gray-700 ${
-                language === 'az' ? 'bg-gray-700 text-white' : 'text-gray-300'
-              }`}
-            >
-              <Globe size={16} className="mr-3" />
-              Azərbaycan
-            </button>
-            <button
-              onClick={() => {
-                setLanguage('en');
-                setIsLanguageMenuOpen(false);
-              }}
-              className={`flex items-center w-full px-4 py-3 text-left hover:bg-gray-700 ${
-                language === 'en' ? 'bg-gray-700 text-white' : 'text-gray-300'
-              }`}
-            >
-              <Globe size={16} className="mr-3" />
-              English
-            </button>
-            <button
-              onClick={() => {
-                setLanguage('ru');
-                setIsLanguageMenuOpen(false);
-              }}
-              className={`flex items-center w-full px-4 py-3 text-left hover:bg-gray-700 ${
-                language === 'ru' ? 'bg-gray-700 text-white' : 'text-gray-300'
-              }`}
-            >
-              <Globe size={16} className="mr-3" />
-              Русский
-            </button>
-          </div>
-        )}
-        
-        {/* Bildiriş drop-down (kiçik sidebar vəziyyətində) */}
-        {isNotificationsOpen && !isSidebarOpen && (
-          <div className="fixed left-20 top-[170px] bg-gray-800 rounded-lg shadow-lg py-1 z-50 w-64 animate-slideIn">
-            <div className="p-3 border-b border-gray-700">
-              <h3 className="font-medium text-white">Bildirişlər</h3>
-            </div>
-            <div className="max-h-64 overflow-y-auto p-2">
-              <div className="p-2 bg-gray-700 rounded text-gray-200 text-sm mb-2">
-                <div className="font-medium">Yeni sifariş daxil oldu</div>
-                <div className="text-xs text-gray-400">2 dəqiqə əvvəl</div>
-              </div>
-              <div className="p-2 bg-gray-700 rounded text-gray-200 text-sm">
-                <div className="font-medium">Stok azalıb</div>
-                <div className="text-xs text-gray-400">1 saat əvvəl</div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Profil drop-down (kiçik sidebar vəziyyətində) */}
-        {isProfileMenuOpen && !isSidebarOpen && (
-          <div className="fixed left-20 top-[220px] bg-gray-800 rounded-lg shadow-lg py-1 z-50 w-48 animate-slideIn">
-            <div className="p-3 border-b border-gray-700 flex items-center">
-              <img
-                src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff"
-                alt="Profile"
-                className="w-8 h-8 rounded-full mr-3"
-              />
-              <div>
-                <div className="font-medium text-white">Admin</div>
-                <div className="text-xs text-gray-400">admin@example.com</div>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center w-full px-4 py-3 text-left text-gray-300 hover:bg-gray-700"
-            >
-              <LogOut size={16} className="mr-2" />
-              {t('logout')}
-            </button>
-          </div>
-        )}
-
-        {/* Main Content */}
-        <main className="p-6">
+        {/* Page Content */}
+        <main className="pb-8">
           {children || <Outlet />}
         </main>
       </div>
-
-      {/* Global styles for scrollbar and animations */}
-      <style>
-        {`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-          }
-          
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: #1f2937;
-          }
-          
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #4b5563;
-            border-radius: 20px;
-          }
-          
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background-color: #6b7280;
-          }
-          
-          .custom-scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: #4b5563 #1f2937;
-          }
-          
-          @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-          }
-          
-          .animate-slideIn {
-            animation: slideIn 0.2s ease-out forwards;
-          }
-        `}
-      </style>
     </div>
   );
 };
