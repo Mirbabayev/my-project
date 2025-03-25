@@ -1,0 +1,312 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 0 0 0;        /* Black #000000 */
+    --color-accent: 204 204 204;   /* Light grey #cccccc */
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply text-gray-900 antialiased bg-white;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-black;
+    transition: all 0.3s ease;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-700;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium;
+  }
+}
+
+@layer components {
+  /* Main container */
+  .container {
+    @apply px-4 mx-auto;
+    max-width: 1280px;
+  }
+
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 font-medium transition-all duration-300
+           focus:outline-none;
+  }
+
+  .btn-primary {
+    @apply bg-black text-white hover:bg-gray-900;
+  }
+
+  .btn-outline {
+    @apply border border-black text-black hover:bg-black hover:text-white;
+  }
+
+  .btn-sm {
+    @apply px-4 py-2 text-sm;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded shadow-md overflow-hidden transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* Product card */
+  .product-card {
+    @apply bg-white overflow-hidden transition-all duration-500 flex flex-col;
+  }
+
+  .product-card .image-container {
+    @apply relative overflow-hidden bg-gray-50;
+    aspect-ratio: 1/1;
+  }
+
+  .product-card img {
+    @apply object-cover w-full h-full transition-transform duration-700;
+  }
+
+  .product-card:hover img {
+    @apply scale-110;
+  }
+
+  .product-card .product-info {
+    @apply p-4 flex flex-col flex-grow;
+  }
+
+  .product-card .product-title {
+    @apply text-base font-medium mb-1 transition-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .product-card:hover .product-title {
+    @apply text-primary;
+  }
+
+  .product-card .product-price {
+    @apply font-bold text-lg mt-auto;
+  }
+
+  .product-card .old-price {
+    @apply text-gray-400 line-through text-sm ml-2;
+  }
+
+  .product-card .discount-badge {
+    @apply absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-sm font-medium z-10;
+  }
+
+  .product-card .wishlist-btn {
+    @apply absolute top-2 right-2 bg-white/80 p-2 rounded-full shadow-md z-10
+           transition-all duration-300 hover:bg-primary hover:text-white;
+  }
+
+  .product-card .quick-view {
+    @apply absolute bottom-0 left-0 right-0 bg-black/80 text-white text-center py-2 translate-y-full
+           transition-transform duration-300 text-sm font-medium uppercase tracking-wider;
+  }
+
+  .product-card:hover .quick-view {
+    @apply translate-y-0;
+  }
+
+  /* Section styles */
+  .section {
+    @apply py-12 md:py-16;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-medium mb-2 relative inline-block;
+  }
+
+  .section-title::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-1/2 h-1 bg-primary;
+  }
+
+  .section-subtitle {
+    @apply text-lg text-gray-600 mb-8;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes flicker {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-fade-in-delay {
+    animation: fadeIn 0.5s ease-out 0.2s forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-in-delay-2 {
+    animation: fadeIn 0.5s ease-out 0.4s forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-left {
+    animation: fadeInLeft 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-right {
+    animation: fadeInRight 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-down {
+    animation: fadeInDown 0.6s ease-out forwards;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* Utility classes */
+  .glass-effect {
+    @apply bg-white/70 backdrop-blur-md;
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  .hover-bg {
+    @apply transition-colors duration-300;
+  }
+
+  .object-cover {
+    object-fit: cover;
+  }
+
+  .aspect-square {
+    aspect-ratio: 1/1;
+  }
+
+  /* Carousel navigation */
+  .carousel-arrow {
+    @apply w-10 h-10 flex items-center justify-center bg-black/20 text-white
+           hover:bg-primary transition-colors duration-300;
+  }
+
+  /* Header styles */
+  .header-transparent {
+    @apply bg-transparent text-white;
+  }
+
+  .header-solid {
+    @apply bg-white text-black shadow-sm;
+  }
+
+  /* Footer styles */
+  .footer-link {
+    @apply block py-1 text-gray-400 hover:text-white transition-colors;
+  }
+
+  /* Newsletter form */
+  .newsletter-input {
+    @apply w-full px-4 py-3 bg-white border-b-2 border-primary outline-none transition-all;
+  }
+}
+
+/* Remove page transitions that are no longer needed */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
