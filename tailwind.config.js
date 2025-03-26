@@ -195,6 +195,10 @@ export default {
           '0%': { transform: 'translateY(100%)' },
           '100%': { transform: 'translateY(0)' },
         },
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(calc(-50% - 0.5rem))' }
+        }
       },
       animation: {
         fadeIn: 'fadeIn 0.5s ease-in-out',
@@ -218,6 +222,7 @@ export default {
         'scale-in': 'scaleIn 0.3s ease-out',
         'slide-in-from-top': 'slideInFromTop 0.5s ease-out',
         'slide-in-from-bottom': 'slideInFromBottom 0.5s ease-out',
+        'scroll': 'scroll 180s linear infinite'
       },
       backgroundSize: {
         'auto': 'auto',
