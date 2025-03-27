@@ -6,7 +6,8 @@ import {
   Heart, 
   ShoppingBag, 
   User, 
-  Menu
+  Menu,
+  ChevronDown
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -16,74 +17,81 @@ export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100">
+    <header className="bg-white border-b border-gold-200">
       {/* Top bar */}
-      <div className="bg-accent py-2">
+      <div className="bg-gold-100 py-2">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-600">Bütün sifarişlər üçün çatdırılma pulsuzdur</p>
-            <div className="flex items-center space-x-4">
-              <Link to="/contact" className="text-xs text-gray-600 hover:text-primary">Əlaqə</Link>
-              <Link to="/faq" className="text-xs text-gray-600 hover:text-primary">FAQ</Link>
+            <p className="text-xs font-light tracking-wide text-gold-700">Bütün sifarişlər üçün çatdırılma pulsuzdur</p>
+            <div className="flex items-center space-x-6">
+              <Link to="/contact" className="text-xs uppercase tracking-wider text-gold-700 hover:text-primary transition-colors duration-300">Əlaqə</Link>
+              <Link to="/faq" className="text-xs uppercase tracking-wider text-gold-700 hover:text-primary transition-colors duration-300">FAQ</Link>
             </div>
           </div>
         </div>
       </div>
       
       {/* Main header */}
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span className="text-2xl font-extrabold">
-              <span className="text-primary">Easy</span>
-              <span className="text-gray-800">Parfum</span>
+            <span className="text-2xl font-didot tracking-widest">
+              <span className="text-primary uppercase">Easy</span>
+              <span className="text-dark uppercase">Parfum</span>
             </span>
           </Link>
           
-          {/* Search bar */}
-          <div className="relative flex-1 max-w-md mx-4">
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Axtarış..."
-                className="w-full py-2 pl-4 pr-10 bg-accent/50 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary">
-                <Search className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+          {/* Nav Menu - Desktop */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link to="/products" className="text-sm uppercase tracking-wider text-dark hover:text-primary transition-colors duration-300 flex items-center">
+              Kataloq
+              <ChevronDown className="w-4 h-4 ml-1" />
+            </Link>
+            <Link to="/brands" className="text-sm uppercase tracking-wider text-dark hover:text-primary transition-colors duration-300">
+              Brendlər
+            </Link>
+            <Link to="/new" className="text-sm uppercase tracking-wider text-dark hover:text-primary transition-colors duration-300">
+              Yeni
+            </Link>
+            <Link to="/bestsellers" className="text-sm uppercase tracking-wider text-dark hover:text-primary transition-colors duration-300">
+              Bestsellerlər
+            </Link>
+          </nav>
           
           {/* User actions */}
-          <div className="flex items-center space-x-4">
-            <Link to="/wishlist" className="p-2 rounded-full hover:bg-accent transition-colors relative">
-              <Heart className="w-6 h-6 text-gray-700" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center">0</span>
+          <div className="flex items-center space-x-6">
+            <button className="text-dark hover:text-primary transition-colors duration-300">
+              <Search className="w-5 h-5" />
+            </button>
+            
+            <Link to="/wishlist" className="text-dark hover:text-primary transition-colors duration-300 relative">
+              <Heart className="w-5 h-5" />
+              <span className="absolute -top-2 -right-2 w-4 h-4 bg-primary text-white text-[10px] rounded-full flex items-center justify-center">0</span>
             </Link>
             
-            <Link to="/cart" className="p-2 rounded-full hover:bg-accent transition-colors relative">
-              <ShoppingBag className="w-6 h-6 text-gray-700" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center">0</span>
+            <Link to="/cart" className="text-dark hover:text-primary transition-colors duration-300 relative">
+              <ShoppingBag className="w-5 h-5" />
+              <span className="absolute -top-2 -right-2 w-4 h-4 bg-primary text-white text-[10px] rounded-full flex items-center justify-center">0</span>
             </Link>
             
             {user ? (
-              <Link to="/profile" className="p-2 rounded-full hover:bg-accent transition-colors">
-                <User className="w-6 h-6 text-gray-700" />
+              <Link to="/profile" className="text-dark hover:text-primary transition-colors duration-300">
+                <User className="w-5 h-5" />
               </Link>
             ) : (
               <Link 
                 to="/auth/login"
-                className="parfumbar-btn hidden sm:flex items-center gap-1"
+                className="text-sm uppercase tracking-wider text-dark hover:text-primary transition-colors duration-300 hidden sm:flex items-center gap-1"
               >
-                <User className="w-4 h-4" />
+                <User className="w-4 h-4 mr-1" />
                 {t('header.login')}
               </Link>
             )}
             
             {/* Mobile menu button */}
             <button 
-              className="sm:hidden p-2 text-gray-700"
+              className="md:hidden text-dark hover:text-primary transition-colors duration-300"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <Menu className="w-6 h-6" />
@@ -92,16 +100,70 @@ export const Header = () => {
         </div>
       </div>
       
+      {/* Search bar - Expandable */}
+      <div className="border-t border-gold-200 py-4 hidden">
+        <div className="container mx-auto px-4">
+          <div className="max-w-lg mx-auto">
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="Axtarış..."
+                className="w-full py-3 px-4 bg-transparent border-b border-gold-300 focus:outline-none focus:border-primary transition-colors text-dark placeholder-gold-400"
+              />
+              <button className="absolute right-0 top-1/2 -translate-y-1/2 text-gold-500 hover:text-primary transition-colors">
+                <Search className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="sm:hidden bg-white border-t border-gray-100">
+        <div className="md:hidden bg-white border-t border-gold-200">
           <div className="container mx-auto">
             <nav className="py-4">
-              <ul className="space-y-3">
-                <li className="border-b border-gray-100 pb-2">
+              <ul className="space-y-4">
+                <li className="border-b border-gold-200 pb-3">
+                  <Link 
+                    to="/products"
+                    className="block px-4 py-2 text-dark hover:text-primary transition-colors uppercase tracking-wider text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Kataloq
+                  </Link>
+                </li>
+                <li className="border-b border-gold-200 pb-3">
+                  <Link 
+                    to="/brands"
+                    className="block px-4 py-2 text-dark hover:text-primary transition-colors uppercase tracking-wider text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Brendlər
+                  </Link>
+                </li>
+                <li className="border-b border-gold-200 pb-3">
+                  <Link 
+                    to="/new"
+                    className="block px-4 py-2 text-dark hover:text-primary transition-colors uppercase tracking-wider text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Yeni
+                  </Link>
+                </li>
+                <li className="border-b border-gold-200 pb-3">
+                  <Link 
+                    to="/bestsellers"
+                    className="block px-4 py-2 text-dark hover:text-primary transition-colors uppercase tracking-wider text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Bestsellerlər
+                  </Link>
+                </li>
+                <li className="border-b border-gold-200 pb-3">
                   <Link 
                     to="/auth/login"
-                    className="block px-4 py-2 text-gray-700 hover:text-primary"
+                    className="block px-4 py-2 text-dark hover:text-primary transition-colors uppercase tracking-wider text-sm"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {t('header.login')}

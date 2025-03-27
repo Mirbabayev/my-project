@@ -9,19 +9,19 @@ const heroSlides = [
   {
     title: "Prada Luna Rossa Black",
     subtitle: "Experience the elegance of Prada",
-    image: "https://example.com/images/prada-luna-rossa-black.jpg",
+    image: "/images/perfumes/perfume1.jpg",
     cta: "Discover Now"
   },
   {
     title: "Jean Paul Gaultier Le Male Elixir",
     subtitle: "A bold fragrance for the modern man",
-    image: "https://example.com/images/jean-paul-gaultier-le-male-elixir.jpg",
+    image: "/images/perfumes/perfume2.jpg",
     cta: "View Collection"
   },
   {
     title: "Floris London",
     subtitle: "Timeless elegance from London",
-    image: "https://example.com/images/floris-london.jpg",
+    image: "/images/perfumes/perfume3.jpg",
     cta: "Seasonal Fragrances"
   }
 ];
@@ -43,10 +43,10 @@ const brands = [
 
 // Yeni kategoriyalar
 const categories = [
-  { name: 'Qadın ətirləri', slug: 'qadin', image: 'https://images.unsplash.com/photo-1615529162924-f8605388461d?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Kişi ətirləri', slug: 'kisi', image: 'https://images.unsplash.com/photo-1547887538-e3a2f32cb1cc?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Uniseks ətirlər', slug: 'uniseks', image: 'https://images.unsplash.com/photo-1611401677282-be6594e6cbff?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Mövsümi kolleksiyalar', slug: 'movsumi', image: 'https://images.unsplash.com/photo-1590736969596-dd610e3e013f?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Qadın ətirləri', slug: 'qadin', image: '/images/perfumes/perfume1.jpg' },
+  { name: 'Kişi ətirləri', slug: 'kisi', image: '/images/perfumes/perfume2.jpg' },
+  { name: 'Uniseks ətirlər', slug: 'uniseks', image: '/images/perfumes/perfume3.jpg' },
+  { name: 'Mövsümi kolleksiyalar', slug: 'movsumi', image: '/images/perfumes/perfume1.jpg' },
 ];
 
 // Qoxu tipləri
@@ -193,49 +193,67 @@ export default function Home() {
   return (
     <div className="bg-white">
       {/* Hero section */}
-      <section className="relative overflow-hidden shadow-lg">
+      <section className="relative overflow-hidden">
         <div 
-          className={`relative h-[350px] md:h-[350px] transition-opacity duration-500 ${animateHero ? 'opacity-100' : 'opacity-0'}`}
+          className={`relative h-[70vh] transition-opacity duration-700 ${animateHero ? 'opacity-100' : 'opacity-0'}`}
           style={{
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url(${heroSlides[currentSlide].image})`,
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), url(${heroSlides[currentSlide].image})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            transition: 'all 0.5s ease-in-out',
-            borderRadius: '0 0 30px 30px',
-            margin: '0 20px'
+            backgroundRepeat: 'no-repeat',
           }}
         >
-          {/* Parlaq işıq effekti */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-accent/30 mix-blend-overlay rounded-[30px]"></div>
-          
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent rounded-[30px]">
-            <div className="container mx-auto px-4 h-full flex items-center">
-              <div className="max-w-md md:max-w-xl text-white">
-                <span className={`inline-block bg-primary/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium mb-3 transition-all duration-500 delay-200 ${animateHero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                  New Collection
-                </span>
-                <h1 className={`text-3xl md:text-5xl font-bold mb-4 transition-transform duration-500 ${animateHero ? 'translate-x-0' : '-translate-x-10'}`}>
-                  {heroSlides[currentSlide].title}
-                </h1>
-                <p className={`text-lg mb-6 transition-transform duration-500 delay-100 ${animateHero ? 'translate-x-0' : '-translate-x-10'}`}>
-                  {heroSlides[currentSlide].subtitle}
-                </p>
-                <Link
-                  to="/products"
-                  className={`parfumbar-btn inline-block transition-all duration-500 delay-200 ${animateHero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                >
-                  {heroSlides[currentSlide].cta}
-                </Link>
-              </div>
+          <div 
+            className="absolute inset-0 flex flex-col items-center justify-center text-center p-4"
+            style={{ 
+              transform: `translateY(${scrollPosition * 0.2}px)` 
+            }}
+          >
+            <div className="max-w-4xl mx-auto">
+              <h1 
+                className="text-white text-3xl md:text-5xl font-didot uppercase tracking-wider mb-4"
+                style={{ 
+                  opacity: 1 - scrollPosition * 0.002,
+                }}
+              >
+                {heroSlides[currentSlide].title}
+              </h1>
+              <p 
+                className="text-white/90 text-lg md:text-xl font-light mb-8"
+                style={{ 
+                  opacity: 1 - scrollPosition * 0.003,
+                }}
+              >
+                {heroSlides[currentSlide].subtitle}
+              </p>
+              <Link 
+                to="/products" 
+                className="bvlgari-btn"
+              >
+                {heroSlides[currentSlide].cta}
+              </Link>
             </div>
           </div>
           
-          {/* Parlaq effektlər */}
-          <div className="absolute -top-[30%] -right-[10%] w-[40%] h-[70%] rounded-full bg-primary/10 blur-3xl mix-blend-overlay pointer-events-none"></div>
-          <div className="absolute -bottom-[20%] -left-[10%] w-[30%] h-[50%] rounded-full bg-accent/10 blur-3xl mix-blend-overlay pointer-events-none"></div>
+          {/* Slide control buttons */}
+          <button 
+            onClick={prevSlide}
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center border border-white/30 text-white hover:bg-white/10 transition-colors"
+            aria-label="Previous slide"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
           
-          {/* Slayder naviqasiyası */}
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+          <button 
+            onClick={nextSlide}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center border border-white/30 text-white hover:bg-white/10 transition-colors"
+            aria-label="Next slide"
+          >
+            <ArrowRight className="w-5 h-5" />
+          </button>
+          
+          {/* Slide indicators */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
             {heroSlides.map((_, index) => (
               <button
                 key={index}
@@ -246,31 +264,129 @@ export default function Home() {
                     setAnimateHero(true);
                   }, 300);
                 }}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  currentSlide === index 
-                    ? 'bg-primary scale-150 w-6' 
-                    : 'bg-white/70 hover:bg-primary/50'
-                }`}
+                className={`w-2 h-2 ${
+                  currentSlide === index ? 'bg-white' : 'bg-white/40'
+                } transition-colors duration-300`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
           </div>
+        </div>
+      </section>
+      
+      {/* Brendlər markaları */}
+      <section className="py-16 relative overflow-hidden">
+        <div className="container mx-auto px-4 mb-10">
+          <h2 className="deluxe-section-title">
+            Premium Brendlər
+          </h2>
+        </div>
+        
+        <div className="brands-marquee">
+          <div 
+            className="flex justify-around items-center py-6 gap-8"
+            style={marqueeStyle}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            {brands.concat(brands).map((brand, index) => (
+              <Link 
+                key={`${brand.slug}-${index}`}
+                to={`/brands/${brand.slug}`}
+                className="font-didot text-xl md:text-2xl uppercase text-gold-600 hover:text-primary transition-colors duration-300 tracking-widest px-6 whitespace-nowrap"
+              >
+                {brand.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Kategoriyalar */}
+      <section className="py-16 bg-gold-100">
+        <div className="container mx-auto px-4">
+          <h2 className="deluxe-section-title">
+            Ətir Kateqoriyaları
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {categories.map((category) => (
+              <Link 
+                key={category.slug}
+                to={`/products?category=${category.slug}`}
+                className="group relative overflow-hidden block h-[300px]"
+              >
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500"></div>
+                <img 
+                  src={category.image}
+                  alt={category.name}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <h3 className="text-white text-xl font-didot uppercase tracking-widest bg-black/40 px-6 py-4 group-hover:bg-primary/80 transition-colors duration-500">
+                    {category.name}
+                  </h3>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Populyar məhsullar */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="deluxe-section-title">
+            Populyar Ətirlər
+          </h2>
           
-          {/* Slayder kontrolları */}
-          <button 
-            onClick={prevSlide}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/10 hover:bg-primary/80 p-2 rounded-full text-white transition-colors backdrop-blur-sm"
-            aria-label="Previous slide"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <button 
-            onClick={nextSlide}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/10 hover:bg-primary/80 p-2 rounded-full text-white transition-colors backdrop-blur-sm"
-            aria-label="Next slide"
-          >
-            <ArrowRight className="w-5 h-5" />
-          </button>
+          <div className="flex items-center justify-center mb-10">
+            <div className="inline-flex border-b border-gold-200 p-1">
+              <button
+                className={`px-6 py-2 text-sm uppercase tracking-wider ${
+                  activeGender === 'all' ? 'text-primary border-b-2 border-primary' : 'text-gold-700'
+                }`}
+                onClick={() => setActiveGender('all')}
+              >
+                Hamısı
+              </button>
+              <button
+                className={`px-6 py-2 text-sm uppercase tracking-wider ${
+                  activeGender === 'qadın' ? 'text-primary border-b-2 border-primary' : 'text-gold-700'
+                }`}
+                onClick={() => setActiveGender('qadın')}
+              >
+                Qadın
+              </button>
+              <button
+                className={`px-6 py-2 text-sm uppercase tracking-wider ${
+                  activeGender === 'kişi' ? 'text-primary border-b-2 border-primary' : 'text-gold-700'
+                }`}
+                onClick={() => setActiveGender('kişi')}
+              >
+                Kişi
+              </button>
+              <button
+                className={`px-6 py-2 text-sm uppercase tracking-wider ${
+                  activeGender === 'uniseks' ? 'text-primary border-b-2 border-primary' : 'text-gold-700'
+                }`}
+                onClick={() => setActiveGender('uniseks')}
+              >
+                Uniseks
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {visibleProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link to="/products" className="bvlgari-btn-outline">
+              Bütün məhsulları kəşf et
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -443,54 +559,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Brendlər Bölməsi */}
-      <section className="py-12 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="parfumbar-heading text-3xl mb-2">Premium Brendlər</h2>
-              <p className="text-gray-600">Dünyanın ən lüks ətir brendləri</p>
-            </div>
-          </div>
-          
-          <div className="relative">
-            {/* Marquee effekti - daimi hərəkət edən brendlər */}
-            <div 
-              className="flex overflow-hidden py-6 brands-marquee"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-            >
-              <div className="flex" style={marqueeStyle}>
-                {brands.map((brand) => (
-                  <Link 
-                    key={brand.slug}
-                    to={`/products?brand=${encodeURIComponent(brand.name)}`}
-                    className="parfumbar-card mx-4 px-8 py-6 flex items-center justify-center min-w-[170px] border-2 border-transparent hover:border-primary/30 shadow-sm hover:shadow-md transition-all"
-                  >
-                    <span className="font-bold text-gray-800 text-lg">{brand.name}</span>
-                  </Link>
-                ))}
-              </div>
-              <div className="flex" style={marqueeStyle2} aria-hidden="true">
-                {brands.map((brand) => (
-                  <Link 
-                    key={`${brand.slug}-dup`}
-                    to={`/products?brand=${encodeURIComponent(brand.name)}`}
-                    className="parfumbar-card mx-4 px-8 py-6 flex items-center justify-center min-w-[170px] border-2 border-transparent hover:border-primary/30 shadow-sm hover:shadow-md transition-all"
-                  >
-                    <span className="font-bold text-gray-800 text-lg">{brand.name}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-            
-            {/* Kənar kölgələr */}
-            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent z-10"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white to-transparent z-10"></div>
           </div>
         </div>
       </section>
