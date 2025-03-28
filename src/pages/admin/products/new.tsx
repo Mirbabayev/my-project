@@ -102,10 +102,17 @@ export default function NewProduct() {
   // Brend dəyişdikdə məhsul siyahısını yenilə
   useEffect(() => {
     if (formData.brand) {
+      // Seçilmiş brend üçün məhsulları göstər
       const products = productsByBrand[formData.brand] || [];
       setAvailableProducts(products);
     } else {
-      setAvailableProducts([]);
+      // Brend seçilmədikdə bütün məhsulları göstər
+      const allProducts: string[] = [];
+      Object.values(productsByBrand).forEach(products => {
+        allProducts.push(...products);
+      });
+      // Məhsulları əlifba sırasına düz
+      setAvailableProducts(allProducts.sort());
     }
   }, [formData.brand, productsByBrand]);
   
@@ -120,6 +127,16 @@ export default function NewProduct() {
       // Brend dəyişdikdə məhsul adını saxla
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+  };
+  
+  // Məhsul adına görə brend adını tapan funksiya
+  const getBrandForProduct = (productName: string): string => {
+    for (const [brand, products] of Object.entries(productsByBrand)) {
+      if (products.includes(productName)) {
+        return `(${brand})`;
+      }
+    }
+    return "";
   };
   
   // Çox seçim üçün (notes)
@@ -141,9 +158,20 @@ export default function NewProduct() {
     e.preventDefault();
     
     // Form validasiyası
-    if (!formData.name || !formData.brand || !formData.price) {
-      alert('Zəhmət olmasa bütün lazımi sahələri doldurun!');
+    if (!formData.name || !formData.price) {
+      alert('Zəhmət olmasa məhsul adı və qiymət sahələrini doldurun!');
       return;
+    }
+    
+    // Əgər brend seçilməyibsə, məhsul adına görə brendi təyin edirik
+    let brandToUse = formData.brand;
+    if (!brandToUse) {
+      brandToUse = getBrandForProduct(formData.name).replace(/[()]/g, ""); // Mötərizələri silir
+      
+      if (!brandToUse) {
+        alert('Məhsulun brendi təyin edilmədi. Zəhmət olmasa brend seçin və ya başqa məhsul adı seçin.');
+        return;
+      }
     }
     
     try {
@@ -155,7 +183,7 @@ export default function NewProduct() {
       const newProduct = {
         id: newId,
         name: formData.name,
-        brand: formData.brand,
+        brand: brandToUse,
         price: parseFloat(formData.price),
         description: formData.description,
         category: formData.category,
@@ -254,7 +282,10 @@ export default function NewProduct() {
                   <option value="">Məhsul adı seçin</option>
                   {availableProducts.map((productName) => (
                     <option key={productName} value={productName}>
-                      {productName}
+                      {!formData.brand 
+                        ? `${productName} ${getBrandForProduct(productName)}`  // Brend seçilmədikdə, məhsul adı - (Brend) formatında göstər
+                        : productName  // Brend seçildikdə sadəcə məhsul adını göstər
+                      }
                     </option>
                   ))}
                 </select>
