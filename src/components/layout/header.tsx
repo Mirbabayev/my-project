@@ -7,14 +7,27 @@ import {
   ShoppingBag, 
   User, 
   Menu,
-  ChevronDown
+  ChevronDown,
+  Settings
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export const Header = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdminUser, setIsAdminUser] = useState(false);
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const hasAdminRole = await isAdmin();
+      setIsAdminUser(hasAdminRole);
+    };
+    
+    if (user) {
+      checkAdminStatus();
+    }
+  }, [user, isAdmin]);
 
   return (
     <header className="bg-white border-b border-gold-200">
@@ -76,9 +89,20 @@ export const Header = () => {
             </Link>
             
             {user ? (
-              <Link to="/profile" className="text-dark hover:text-primary transition-colors duration-300">
-                <User className="w-5 h-5" />
-              </Link>
+              <div className="flex items-center space-x-4">
+                {isAdminUser && (
+                  <Link 
+                    to="/admin" 
+                    className="text-dark hover:text-primary transition-colors duration-300"
+                    title="Admin Panel"
+                  >
+                    <Settings className="w-5 h-5" />
+                  </Link>
+                )}
+                <Link to="/profile" className="text-dark hover:text-primary transition-colors duration-300">
+                  <User className="w-5 h-5" />
+                </Link>
+              </div>
             ) : (
               <Link 
                 to="/auth/login"
@@ -160,6 +184,17 @@ export const Header = () => {
                     Bestsellerlər
                   </Link>
                 </li>
+                {isAdminUser && (
+                  <li className="border-b border-gold-200 pb-3">
+                    <Link 
+                      to="/admin"
+                      className="block px-4 py-2 text-dark hover:text-primary transition-colors uppercase tracking-wider text-sm"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Admin Panel
+                    </Link>
+                  </li>
+                )}
                 <li className="border-b border-gold-200 pb-3">
                   <Link 
                     to="/auth/login"

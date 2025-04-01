@@ -1,10 +1,14 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { supabase } from './supabase';
-import { getCurrentUser, signOut as localSignOut } from './auth';
+import { getCurrentUser, signOut as localSignOut, UserRole, isAdmin, isSeller, hasRole } from './auth';
 
 type User = {
   id: string;
   email?: string;
+  user_metadata?: {
+    role?: UserRole;
+  };
+  role?: UserRole;
 } | null;
 
 type AuthContextType = {
@@ -12,6 +16,9 @@ type AuthContextType = {
   isLoading: boolean;
   refreshUser: () => Promise<void>;
   signOut: () => Promise<void>;
+  checkRole: (role: UserRole) => Promise<boolean>;
+  isAdmin: () => Promise<boolean>;
+  isSeller: () => Promise<boolean>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -19,6 +26,9 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   refreshUser: async () => {},
   signOut: async () => {},
+  checkRole: async () => false,
+  isAdmin: async () => false,
+  isSeller: async () => false,
 });
 
 export function useAuth() {
@@ -32,16 +42,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = async () => {
     try {
       setIsLoading(true);
+      console.log('Refreshing user...'); // Debug log
+      
       // Try to get Supabase session
       const { data } = await supabase.auth.getSession();
       if (data.session?.user) {
-        setUser(data.session.user);
+        console.log('Supabase user found:', data.session.user); // Debug log
+        const supabaseUser = data.session.user as User;
+        setUser(supabaseUser);
         setIsLoading(false);
         return;
       }
 
       // Try local auth as fallback
-      const localUser = await getCurrentUser();
+      const localUser = await getCurrentUser() as User;
+      console.log('Local user found:', localUser); // Debug log
       setUser(localUser);
     } catch (error) {
       console.error('Error getting user: ', error);
@@ -67,6 +82,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Rol yoxlama funksiyası
+  const checkRole = async (role: UserRole): Promise<boolean> => {
+    console.log('Checking role:', role); // Debug log
+    const hasRequiredRole = await hasRole(role);
+    console.log('Has required role:', hasRequiredRole); // Debug log
+    return hasRequiredRole;
+  };
+
+  // Admin yoxlama funksiyası
+  const checkIsAdmin = async (): Promise<boolean> => {
+    console.log('Checking admin role...'); // Debug log
+    const isAdminUser = await isAdmin();
+    console.log('Is admin:', isAdminUser); // Debug log
+    return isAdminUser;
+  };
+
+  // Satıcı yoxlama funksiyası
+  const checkIsSeller = async (): Promise<boolean> => {
+    return isSeller();
+  };
+
   useEffect(() => {
     refreshUser();
 
@@ -75,7 +111,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (event === 'SIGNED_OUT') {
         setUser(null);
       } else if (session?.user) {
-        setUser(session.user);
+        // Supabase-dən gələn istifadəçini düzgün User tipinə cast edirik
+        const supabaseUser = session.user as User;
+        setUser(supabaseUser);
       }
       setIsLoading(false);
     });
@@ -100,6 +138,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     refreshUser,
     signOut,
+    checkRole,
+    isAdmin: checkIsAdmin,
+    isSeller: checkIsSeller,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

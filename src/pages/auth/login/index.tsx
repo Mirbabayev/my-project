@@ -35,9 +35,12 @@ export default function Login() {
   const onSubmit = async (data: LoginForm) => {
     try {
       setError(null);
-      await signIn(data.email, data.password);
+      console.log('Attempting login with:', data.email); // Debug log
+      const result = await signIn(data.email, data.password);
+      console.log('Login result:', result); // Debug log
       navigate(from, { replace: true });
     } catch (err) {
+      console.error('Login error:', err); // Debug log
       setError('E-poçt və ya şifrə yanlışdır');
     }
   };

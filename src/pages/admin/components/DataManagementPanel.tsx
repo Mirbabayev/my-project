@@ -3,7 +3,7 @@ import { BrandManager } from './BrandManager';
 import { ProductManager } from './ProductManager';
 import { NotesManager } from './NotesManager';
 import { CategoryManager } from './CategoryManager';
-import { Settings, Database } from 'lucide-react';
+import { Settings, Database, Save } from 'lucide-react';
 
 // Import our initial data
 import { products } from '../../../data/products';
@@ -254,50 +254,83 @@ const DataManagementPanel = () => {
   };
 
   return (
-    <div className="bg-white rounded-md shadow-sm overflow-hidden">
-      <div 
-        className="flex items-center justify-between p-4 cursor-pointer bg-gold-50"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
+    <div className={`bg-white border rounded-lg shadow-sm transition-all duration-300 ${isExpanded ? 'p-5' : 'p-4'}`}>
+      <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
-          <Database className="w-5 h-5 text-primary" />
-          <h3 className="font-medium">Kataloq Məlumatları</h3>
+          <Database className="w-5 h-5 text-blue-500" />
+          <h3 className="text-lg font-medium">Məlumatların İdarəsi</h3>
         </div>
-        <Settings className={`w-5 h-5 text-gold-700 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+        
+        <button
+          type="button"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-gray-500 hover:text-primary transition-colors"
+        >
+          <Settings className="w-5 h-5" />
+        </button>
       </div>
       
       {isExpanded && (
-        <div className="p-4 border-t border-gold-100">
-          <p className="text-sm text-gray-600 mb-4">
-            Burada kataloq məlumatlarını idarə edə bilərsiniz - yeni brendlər, məhsullar, kateqoriyalar və notlar əlavə edin.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <h4 className="text-sm font-medium mb-2">Brendlər və Məhsullar</h4>
-              <div className="space-y-2">
-                <BrandManager existingBrands={brands} onSaveBrands={handleSaveBrands} />
-                <ProductManager existingProducts={productsByBrand} onSaveProducts={handleSaveProducts} />
-              </div>
-            </div>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <BrandManager
+              existingBrands={brands}
+              onSaveBrands={handleSaveBrands}
+            />
             
-            <div>
-              <h4 className="text-sm font-medium mb-2">Kateqoriyalar və Notlar</h4>
-              <div className="space-y-2">
-                <CategoryManager existingCategories={categories} onSaveCategories={handleSaveCategories} />
-                <NotesManager existingNotes={notes} onSaveNotes={handleSaveNotes} />
-              </div>
-            </div>
+            <ProductManager
+              existingProducts={productsByBrand}
+              existingBrands={brands}
+              onSaveProducts={handleSaveProducts}
+            />
+            
+            <CategoryManager
+              existingCategories={categories}
+              onSaveCategories={handleSaveCategories}
+            />
           </div>
           
-          <div className="flex justify-end">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+            <NotesManager
+              existingNotes={notes}
+              onSaveNotes={handleSaveNotes}
+            />
+            
             <button
               type="button"
               onClick={saveDataToLocalStorage}
-              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
             >
-              Bütün Məlumatları Yadda Saxla
+              <Save size={16} /> Bütün məlumatları yadda saxla
             </button>
+          </div>
+          
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="text-sm text-gray-500">
+              <strong>Statistika:</strong>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
+                <div className="bg-blue-50 rounded-md p-2">
+                  <div className="text-blue-700 font-medium">{brands.length}</div>
+                  <div className="text-xs">Brend</div>
+                </div>
+                <div className="bg-purple-50 rounded-md p-2">
+                  <div className="text-purple-700 font-medium">
+                    {Object.values(productsByBrand).reduce((acc, arr) => acc + arr.length, 0)}
+                  </div>
+                  <div className="text-xs">Məhsul</div>
+                </div>
+                <div className="bg-green-50 rounded-md p-2">
+                  <div className="text-green-700 font-medium">{categories.length}</div>
+                  <div className="text-xs">Kateqoriya</div>
+                </div>
+                <div className="bg-gold-50 rounded-md p-2">
+                  <div className="text-gold-700 font-medium">
+                    {notes.top.length + notes.middle.length + notes.base.length}
+                  </div>
+                  <div className="text-xs">Not</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
