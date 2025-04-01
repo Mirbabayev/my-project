@@ -1,7 +1,7 @@
 import React from 'react';
 import { Filter, CheckCircle, Clock, AlertTriangle, XCircle } from 'lucide-react';
 
-const Orders = () => {
+const Orders: React.FC = () => {
   const mockOrders = [
     {
       id: '1',

@@ -19,7 +19,6 @@ const AdminPanel = () => {
   const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const [isAdminUser, setIsAdminUser] = useState<boolean | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
 
   // Demo məlumatlar
   const stats = {
@@ -63,68 +62,35 @@ const AdminPanel = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      {/* Başlıq və axtarış */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-800">Admin İdarəetmə Paneli</h1>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <input 
-                type="text" 
-                placeholder="Axtar..." 
-                className="pl-10 pr-4 py-2 border rounded-lg w-full md:w-64" 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">
-                {user?.email || 'Admin'}
-              </span>
-              <button 
-                onClick={() => signOut()}
-                className="text-gray-500 hover:text-red-500"
-              >
-                <LogOut size={20} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <>
       {/* Əsas naviqasiya kartları */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        <Link to="/" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center hover:bg-gray-50 transition-colors">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+        <Link to="/" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors min-h-[100px]">
           <Home className="h-8 w-8 text-gray-600 mb-2" />
           <span className="text-sm font-medium text-gray-700">Ana Səhifə</span>
         </Link>
 
-        <Link to="/admin/products" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center hover:bg-gray-50 transition-colors">
+        <Link to="/admin/products" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors min-h-[100px]">
           <Package className="h-8 w-8 text-green-600 mb-2" />
           <span className="text-sm font-medium text-gray-700">Məhsullar</span>
         </Link>
 
-        <Link to="/admin/orders" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center hover:bg-gray-50 transition-colors">
+        <Link to="/admin/orders" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors min-h-[100px]">
           <ShoppingBag className="h-8 w-8 text-blue-600 mb-2" />
           <span className="text-sm font-medium text-gray-700">Sifarişlər</span>
         </Link>
 
-        <Link to="/admin/categories" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center hover:bg-gray-50 transition-colors">
+        <Link to="/admin/categories" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors min-h-[100px]">
           <Tag className="h-8 w-8 text-purple-600 mb-2" />
           <span className="text-sm font-medium text-gray-700">Kateqoriyalar</span>
         </Link>
 
-        <Link to="/admin/users" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center hover:bg-gray-50 transition-colors">
+        <Link to="/admin/users" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors min-h-[100px]">
           <Users className="h-8 w-8 text-amber-600 mb-2" />
           <span className="text-sm font-medium text-gray-700">İstifadəçilər</span>
         </Link>
 
-        <Link to="/admin/settings" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center hover:bg-gray-50 transition-colors">
+        <Link to="/admin/settings" className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors min-h-[100px]">
           <Settings className="h-8 w-8 text-gray-600 mb-2" />
           <span className="text-sm font-medium text-gray-700">Tənzimləmələr</span>
         </Link>
@@ -181,7 +147,7 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      {/* Əsas məzmun */}
+      {/* Son Sifarişlər və Məhsullar Bölməsi */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Son sifarişlər */}
         <div className="bg-white rounded-lg shadow-sm p-6">
@@ -191,7 +157,6 @@ const AdminPanel = () => {
               Bütün sifarişlər
             </Link>
           </div>
-          
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
@@ -244,12 +209,11 @@ const AdminPanel = () => {
               </Link>
             </div>
           </div>
-          
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Məhsul №</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                   <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Ad</th>
                   <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Brend</th>
                   <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Qiymət</th>
@@ -285,7 +249,7 @@ const AdminPanel = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

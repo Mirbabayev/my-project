@@ -3,6 +3,7 @@ import { Suspense, lazy } from 'react';
 import { useAuth } from '../lib/auth-context';
 import { ProtectedRoute } from '../components/protected-route';
 import { UserRole } from '../lib/auth';
+import AdminLayout from '../layouts/AdminLayout';
 
 const Home = lazy(() => import('../pages/home'));
 const Products = lazy(() => import('../pages/products'));
@@ -15,6 +16,7 @@ const AdminOrders = lazy(() => import('../pages/admin/pages/Orders'));
 const AdminCategories = lazy(() => import('../pages/admin/pages/Categories'));
 const AdminUsers = lazy(() => import('../pages/admin/pages/Users'));
 const AdminSettings = lazy(() => import('../pages/admin/pages/Settings'));
+const AdminNewProduct = lazy(() => import('../pages/admin/products/new'));
 const Unauthorized = lazy(() => import('../pages/unauthorized'));
 
 export function AppRoutes() {
@@ -39,55 +41,24 @@ export function AppRoutes() {
           element={user ? <Navigate to="/" replace /> : <Register />} 
         />
         
-        {/* Admin routes */}
+        {/* Admin routes - AdminLayout ilə əhatə olunmuş */}
         <Route 
           path="/admin" 
           element={
             <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <AdminPanel />
+              <AdminLayout />
             </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/admin/products" 
-          element={
-            <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <AdminProducts />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/admin/orders" 
-          element={
-            <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <AdminOrders />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/admin/categories" 
-          element={
-            <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <AdminCategories />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/admin/users" 
-          element={
-            <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <AdminUsers />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/admin/settings" 
-          element={
-            <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <AdminSettings />
-            </ProtectedRoute>
-          } 
-        />
+          }
+        >
+          {/* AdminLayout içərisində göstəriləcək alt routlar */}
+          <Route index element={<AdminPanel />} /> {/* /admin üçün əsas panel */}
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="products/new" element={<AdminNewProduct />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
 
         {/* İcazəsiz səhifəsi */}
         <Route path="/unauthorized" element={<Unauthorized />} />
