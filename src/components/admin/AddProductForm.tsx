@@ -261,7 +261,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
   // Form sahəsi komponenti - təkrarlanma azaltmaq üçün
   const FormField = ({ label, children, required = false }: { label: string, children: React.ReactNode, required?: boolean }) => (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-base font-medium text-gray-700 mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}
@@ -276,7 +276,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
           <div className="space-y-6">
             {/* Əsas məlumatlar */}
             <div className="border rounded-lg p-4 space-y-4 bg-gray-50 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-800">Əsas Məlumatlar</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Əsas Məlumatlar</h2>
               
               {/* Brend (Dropdown) */}
               <FormField label="Brend" required>
@@ -509,7 +509,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
             
             {/* Əlavə məlumatlar */}
             <div className="border rounded-lg p-4 space-y-4 bg-gray-50 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-800">Əlavə Məlumatlar</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Əlavə Məlumatlar</h2>
               
               {/* Cins */}
               <FormField label="Cins" required>
@@ -523,7 +523,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
                       onChange={handleInputChange}
                       className="text-primary"
                     />
-                    <span className="ml-2">Kişi</span>
+                    <span className="ml-2 text-base">Kişi</span>
                   </label>
                   <label className="inline-flex items-center">
                     <input
@@ -534,7 +534,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
                       onChange={handleInputChange}
                       className="text-primary"
                     />
-                    <span className="ml-2">Qadın</span>
+                    <span className="ml-2 text-base">Qadın</span>
                   </label>
                   <label className="inline-flex items-center">
                     <input
@@ -545,7 +545,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
                       onChange={handleInputChange}
                       className="text-primary"
                     />
-                    <span className="ml-2">Uniseks</span>
+                    <span className="ml-2 text-base">Uniseks</span>
                   </label>
                 </div>
               </FormField>
@@ -576,19 +576,6 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
                 </select>
               </FormField>
               
-              {/* Ətir qrupu */}
-              <FormField label="Ətir qrupu">
-                <select 
-                  name="fragranceGroup" 
-                  value={formData.fragranceGroup} 
-                  onChange={handleInputChange} 
-                  className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md w-full shadow-sm"
-                >
-                  <option value="">Seçin</option>
-                  {fragranceGroups.map(group => <option key={group} value={group}>{group}</option>)}
-                </select>
-              </FormField>
-              
               {/* Stok və Seçilmiş */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                 {/* Stok vəziyyəti */}
@@ -601,7 +588,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
                       onChange={handleInputChange}
                       className="text-primary rounded focus:ring-primary"
                     />
-                    <span className="ml-2 text-sm font-medium text-gray-700">Stokda var</span>
+                    <span className="ml-2 text-base font-medium text-gray-700">Stokda var</span>
                   </label>
                 </div>
                 
@@ -615,7 +602,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
                       onChange={handleInputChange}
                       className="text-primary rounded focus:ring-primary"
                     />
-                    <span className="ml-2 text-sm font-medium text-gray-700">Seçilmiş məhsul</span>
+                    <span className="ml-2 text-base font-medium text-gray-700">Seçilmiş məhsul</span>
                   </label>
                 </div>
               </div>
@@ -626,7 +613,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
           <div className="space-y-6">
             {/* Şəkil yükləmə */}
             <div className="border rounded-lg p-4 space-y-4 bg-gray-50 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-800">Məhsul Şəkli</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Məhsul Şəkli</h2>
               <div className="flex items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-white">
                 {formData.image ? (
                   <div className="relative w-full">
@@ -647,8 +634,8 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
                     className="flex flex-col items-center p-8 text-gray-500 hover:text-primary transition"
                   >
                     <Upload size={32} className="mb-2" />
-                    <span className="text-sm font-medium">Şəkil yükləyin</span>
-                    <span className="text-xs text-gray-400 mt-1">(Maksimum 2MB, JPG və ya PNG)</span>
+                    <span className="text-base font-medium">Şəkil yükləyin</span>
+                    <span className="text-sm text-gray-400 mt-1">(Maksimum 2MB, JPG və ya PNG)</span>
                   </button>
                 )}
               </div>
@@ -656,28 +643,41 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
             
             {/* Notlar */}
             <div className="border rounded-lg p-4 space-y-4 bg-gray-50 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-800">Notlar</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Notlar</h2>
+              
+              {/* Ətir qrupu */}
+              <FormField label="Ətir qrupu">
+                <select 
+                  name="fragranceGroup" 
+                  value={formData.fragranceGroup} 
+                  onChange={handleInputChange} 
+                  className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md w-full shadow-sm"
+                >
+                  <option value="">Seçin</option>
+                  {fragranceGroups.map(group => <option key={group} value={group}>{group}</option>)}
+                </select>
+              </FormField>
               
               {/* Not tipi seçimi */}
               <div className="flex border-b mb-4">
                 <button
                   type="button"
                   onClick={() => setActiveNoteType('top')}
-                  className={`px-4 py-2 text-sm font-medium transition ${activeNoteType === 'top' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+                  className={`px-4 py-2 text-base font-medium transition ${activeNoteType === 'top' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                   Yuxarı notlar
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveNoteType('middle')}
-                  className={`px-4 py-2 text-sm font-medium transition ${activeNoteType === 'middle' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+                  className={`px-4 py-2 text-base font-medium transition ${activeNoteType === 'middle' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                   Orta notlar
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveNoteType('base')}
-                  className={`px-4 py-2 text-sm font-medium transition ${activeNoteType === 'base' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+                  className={`px-4 py-2 text-base font-medium transition ${activeNoteType === 'base' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                   Baza notlar
                 </button>
@@ -709,7 +709,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
               <div className="space-y-4 bg-white p-3 rounded-md border border-gray-100">
                 {['top', 'middle', 'base'].map((noteType) => (
                   <div key={noteType} className="space-y-2">
-                    <h3 className="text-sm font-medium text-gray-700 capitalize">
+                    <h3 className="text-base font-medium text-gray-700 capitalize">
                       {noteType === 'top' ? 'Yuxarı' : noteType === 'middle' ? 'Orta' : 'Baza'} notlar
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -717,7 +717,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
                         formData.notes[noteType as NoteType].map((note) => (
                           <span
                             key={note}
-                            className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-800 text-xs rounded-full"
+                            className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-800 text-sm rounded-full"
                           >
                             {note}
                             <button
@@ -731,7 +731,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
                           </span>
                         ))
                       ) : (
-                        <span className="text-xs text-gray-500 italic">Not əlavə edilməyib</span>
+                        <span className="text-sm text-gray-500 italic">Not əlavə edilməyib</span>
                       )}
                     </div>
                   </div>
@@ -745,13 +745,13 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
         <div className="flex justify-end space-x-3 pt-4 mt-4 border-t">
           <Link 
             to="/admin/products" 
-            className="px-5 py-2.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition shadow-sm font-medium"
+            className="px-5 py-2.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition shadow-sm font-medium text-base"
           >
             Ləğv et
           </Link>
           <button 
             type="submit" 
-            className="px-5 py-2.5 bg-primary text-white rounded-md hover:bg-primary/90 transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium" 
+            className="px-5 py-2.5 bg-primary text-white rounded-md hover:bg-primary/90 transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium text-base" 
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Əlavə edilir...' : 'Məhsulu əlavə et'}
