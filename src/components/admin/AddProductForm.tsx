@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Eye, Plus, X, Upload } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { products as allProducts } from '../../data/products';
+import React, { useState, useEffect, useRef } from 'react';
+import { Plus, X, Upload, ChevronDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { products as allProducts, Product } from '../../data/products';
 
 // Not tipləri
 type NoteType = 'top' | 'middle' | 'base';
@@ -24,7 +24,7 @@ interface ProductFormData {
     middle: string[];
     base: string[];
   };
-  image: string;
+  image: string; // Hələlik URL kimi
 }
 
 // Props interfeysi
@@ -37,52 +37,21 @@ interface AddProductFormProps {
 const defaultCatalogData = {
   brands: [
     "Chanel", "Dior", "Tom Ford", "Lancôme", "Guerlain", "Givenchy", 
-    "Yves Saint Laurent", "Jo Malone", "Hermès", "Prada", "Armani", 
-    "Versace", "Dolce & Gabbana", "Burberry", "Byredo", "Creed", 
-    "Marc Jacobs", "Maison Francis Kurkdjian", "Kilian", "Atelier Cologne", 
-    "Penhaligon's", "Parfums de Marly", "Jean Paul Gaultier", "Thierry Mugler", 
-    "Gucci", "Calvin Klein", "Diptyque", "Escada", "Valentino"
+    "Yves Saint Laurent", "Jo Malone", "Hermès", "Prada", "Armani"
   ],
   categories: ["parfum", "skin care", "makeup", "hair care", "body care"],
-  fragranceGroups: [
-    "Şərq", "Çiçəkli", "Odunlu", "Sitrus", "Fougère", "Aldehydic", 
-    "Aromatic", "Chypre", "Dəri", "Gourmand", "Yaşıl", "Su", "Tərəvəz", 
-    "Meyvəli", "Spicy", "Ədviyyatlı", "Tütün", "İçki"
-  ],
   bottleSizes: ["30ml", "50ml", "75ml", "100ml", "125ml", "150ml", "200ml"],
   concentrations: ["Eau de Toilette", "Eau de Parfum", "Parfum", "Cologne", "Eau de Cologne", "Elixir", "Extrait"],
+  fragranceGroups: ["Şərq", "Çiçəkli", "Odunlu", "Sitrus"],
   notes: {
-    top: [
-      "Bergamot", "Limon", "Portağal", "Mandalin", "Qreypfrut", "Laym",
-      "Alma", "Armud", "Ananas", "Şaftalı", "Ərik", "Gilas", 
-      "Albalı", "Qara qarağat", "Qırmızı qarağat", "Çiyələk", "Moruq",
-      "Yaşıl yarpaqlar", "Nanə", "Rozmarin", "Bənövşə yarpağı", 
-      "Zəncəfil", "Qara istiot", "Çili", "Mixək", "Darçın", "Nutmeg",
-      "Aldehidlər", "Dəniz notları", "Konyak", "Viski", "Anise"
-    ],
-    middle: [
-      "Qızılgül", "Jasmin", "Lavanda", "Yasəmən", "Bənövşə", "Süsən", 
-      "Zanbaq", "Orkide", "Mimoza", "Süsəngülü (İris)", "Günəbaxan", "Tubereuse",
-      "Nərgiz", "Qartopu çiçəyi", "Freziya", "Pion", "Hibiskus", "Magnoliya",
-      "Hil", "Zəfəran", "Muskat", "Dəfnə yarpağı", "Keşniş", "Şüyüd",
-      "Bal", "Ulduz anisi", "Çay", "Yaşıl çay", "Kakao", "Espresso",
-      "Süd", "Badəm", "Qəhvə", "Kakos südü", "İçki notları", "Tütün çiçəyi"
-    ],
-    base: [
-      "Vanil", "Müşk", "Paçuli", "Ənbər", "Oud", "Sedir", "Sandal ağacı",
-      "Vetiver", "Benzoin", "Labdanum", "Qatran", "Kəhrəba", "Daş kömür",
-      "Peru balzamı", "Kopaiva balzamı", "Tolu balzamı", "Kopal", "Styrax",
-      "Kastoreum", "Civetta", "Ambergris", "Dəri",
-      "Tonka paxlası", "Tütün", "Kakao", "Qəhvə", "Karamel", 
-      "Pralini", "Şokolad", "Məxmər", "Mirrha", "Buxur", "Ladanum"
-    ]
+    top: ["Bergamot", "Limon", "Portağal"],
+    middle: ["Qızılgül", "Jasmin", "Lavanda"],
+    base: ["Vanil", "Müşk", "Paçuli"]
   }
 };
 
 const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting = false }) => {
-  const navigate = useNavigate();
   
-  // Form məlumatlarının state'i
   const [formData, setFormData] = useState<ProductFormData>({
     name: "",
     brand: "",
@@ -95,61 +64,63 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
     inStock: true,
     featured: false,
     fragranceGroup: "",
-    notes: {
-      top: [],
-      middle: [],
-      base: []
-    },
+    notes: { top: [], middle: [], base: [] },
     image: ""
   });
-  
-  // Brendə aid məhsulları göstərmək üçün state'lər
-  const [showBrandProducts, setShowBrandProducts] = useState(false);
-  const [brandProducts, setBrandProducts] = useState<any[]>([]);
-  
+
   // Kataloq məlumatları
-  const [brands, setBrands] = useState<string[]>(defaultCatalogData.brands);
-  const [categories, setCategories] = useState<string[]>(defaultCatalogData.categories);
-  const [fragranceGroups, setFragranceGroups] = useState<string[]>(defaultCatalogData.fragranceGroups);
-  const [bottleSizes, setBottleSizes] = useState<string[]>(defaultCatalogData.bottleSizes);
-  const [concentrations, setConcentrations] = useState<string[]>(defaultCatalogData.concentrations);
-  const [notes, setNotes] = useState(defaultCatalogData.notes);
+  const [brands] = useState<string[]>(["Digər", ...defaultCatalogData.brands]);
+  const [categories] = useState<string[]>(defaultCatalogData.categories);
+  const [bottleSizes] = useState<string[]>(defaultCatalogData.bottleSizes);
+  const [concentrations] = useState<string[]>(defaultCatalogData.concentrations);
+  const [fragranceGroups] = useState<string[]>(defaultCatalogData.fragranceGroups);
+  const [allNotes] = useState(defaultCatalogData.notes);
+  const [brandProducts, setBrandProducts] = useState<Product[]>([]);
+  const [productSuggestions, setProductSuggestions] = useState<Product[]>([]);
+  const [showProductSuggestions, setShowProductSuggestions] = useState(false);
+  const [allAvailableProducts, setAllAvailableProducts] = useState<Product[]>(allProducts);
   
-  // Not əlavə etmə interfeysi üçün state'lər
+  // Brend və məhsul dropdown-ları üçün state
+  const [showBrandDropdown, setShowBrandDropdown] = useState(false);
+  const [showProductDropdown, setShowProductDropdown] = useState(false);
+  const [isCustomBrand, setIsCustomBrand] = useState(false);
+  const [isCustomProduct, setIsCustomProduct] = useState(false);
+
+  // Notlar üçün state
   const [activeNoteType, setActiveNoteType] = useState<NoteType>('top');
-  const [noteSearchTerm, setNoteSearchTerm] = useState("");
   const [selectedNote, setSelectedNote] = useState("");
+
+  // Autocomplete siyahısını bağlamaq üçün ref-lər
+  const brandInputRef = useRef<HTMLInputElement>(null);
+  const productNameInputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const brandDropdownRef = useRef<HTMLDivElement>(null);
+  const productDropdownRef = useRef<HTMLDivElement>(null);
   
-  // LocalStorage'dan kataloq məlumatlarını yüklə
+  // Dropdown-a klik xaricində bağlanma məntiqini əlavə edirik
   useEffect(() => {
-    try {
-      const savedData = localStorage.getItem('catalogData');
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        setBrands(parsedData.brands || defaultCatalogData.brands);
-        setCategories(parsedData.categories || defaultCatalogData.categories);
-        setFragranceGroups(parsedData.fragranceGroups || defaultCatalogData.fragranceGroups);
-        setBottleSizes(parsedData.bottleSizes || defaultCatalogData.bottleSizes);
-        
-        if (parsedData.notes && typeof parsedData.notes === 'object' && 
-            parsedData.notes.top && parsedData.notes.middle && parsedData.notes.base) {
-          setNotes(parsedData.notes);
-        }
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        brandDropdownRef.current && 
+        !brandDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowBrandDropdown(false);
       }
-    } catch (error) {
-      console.error("Kataloq məlumatlarını yükləməkdə xəta:", error);
-    }
-  }, []);
-  
-  // Not axtarışı üçün filtrlənmiş notlar
-  const filteredNotes = (noteType: NoteType) => {
-    if (!noteSearchTerm.trim()) return notes[noteType];
+      
+      if (
+        productDropdownRef.current && 
+        !productDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowProductDropdown(false);
+      }
+    };
     
-    return notes[noteType].filter(note => 
-      note.toLowerCase().includes(noteSearchTerm.toLowerCase())
-    );
-  };
-  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Input dəyişiklik handleri
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
@@ -160,21 +131,98 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
       
-      // Əgər brand dəyişirsə, həmin brendə aid məhsulları tap
-      if (name === 'brand' && value) {
-        const products = allProducts.filter(p => p.brand === value).slice(0, 5);
-        setBrandProducts(products);
-        setShowBrandProducts(products.length > 0);
-      } else if (name === 'brand' && !value) {
-        setShowBrandProducts(false);
+      if (name === 'brand') {
+        setProductSuggestions([]);
+        setShowProductSuggestions(false);
+        setIsCustomBrand(value === "Digər" || !brands.some(b => b.toLowerCase() === value.toLowerCase()));
+        
+        if (value && value !== "Digər") {
+          const exactBrand = brands.find(b => b.toLowerCase() === value.toLowerCase());
+          const products = exactBrand 
+            ? allProducts.filter(p => p.brand.toLowerCase() === exactBrand.toLowerCase()) 
+            : [];
+          setBrandProducts(products);
+          
+          // Avtomatik dropdown açılmasını ləğv edirik
+          setShowProductDropdown(false);
+        } else {
+          setBrandProducts([]);
+          setShowProductDropdown(false);
+        }
+      } 
+      else if (name === 'name') {
+        const products = formData.brand ? brandProducts : allProducts;
+        setIsCustomProduct(!products.some(p => p.name.toLowerCase() === value.toLowerCase()));
+        
+        if (value) {
+          const suggestions = products
+            .filter(p => p.name.toLowerCase().includes(value.toLowerCase()))
+            .slice(0, 5);
+          setProductSuggestions(suggestions);
+          setShowProductSuggestions(suggestions.length > 0);
+        } else {
+          setProductSuggestions([]);
+          setShowProductSuggestions(false);
+        }
       }
     }
   };
+
+  // Məhsul təklifinə kliklədikdə
+  const handleSuggestionClick = (product: Product) => {
+    selectProduct(product);
+    setShowProductSuggestions(false);
+    setShowProductDropdown(false);
+    setIsCustomProduct(false);
+  };
   
+  // Brend seçimi
+  const handleBrandSelect = (brand: string) => {
+    if (brand === "Digər") {
+      setFormData(prev => ({ ...prev, brand: "" }));
+      setIsCustomBrand(true);
+      setBrandProducts([]);
+    } else {
+      setFormData(prev => ({ ...prev, brand, name: "" }));
+      setIsCustomBrand(false);
+      
+      // Brend məhsullarını yüklə
+      const products = allProducts.filter(p => 
+        p.brand.toLowerCase() === brand.toLowerCase()
+      );
+      setBrandProducts(products);
+      
+      // Məhsul dropdown-unu avtomarik açmırıq
+      setShowProductDropdown(false);
+    }
+    setShowBrandDropdown(false);
+  };
+
+  // Məhsul seçimi
+  const selectProduct = (product: Product) => {
+    setFormData(prev => ({
+      ...prev,
+      name: product.name,
+      brand: product.brand,
+      price: product.price ? String(product.price) : '',
+      description: product.description,
+      category: product.category,
+      gender: product.gender,
+      size: product.size || '',
+      concentration: product.concentration || '',
+      inStock: product.inStock ?? true,
+      notes: {
+        top: product.notes?.top || [],
+        middle: product.notes?.middle || [],
+        base: product.notes?.base || []
+      },
+      image: product.image || ""
+    }));
+  };
+
   // Not əlavə etmək
   const addNote = (note: string) => {
     if (!note || formData.notes[activeNoteType].includes(note)) return;
-    
     setFormData(prev => ({
       ...prev,
       notes: {
@@ -182,7 +230,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
         [activeNoteType]: [...prev.notes[activeNoteType], note]
       }
     }));
-    setSelectedNote("");
+    setSelectedNote(""); 
   };
   
   // Not silmək
@@ -195,401 +243,515 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSubmit, isSubmitting 
       }
     }));
   };
-  
-  // Form göndərmə
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-  
+
   // Şəkil yükləmə simulyasiyası
   const handleImageUpload = () => {
-    // Burada şəkil yükləmə əməliyyatı olacaq, hələlik sadəcə placeholder
     setFormData(prev => ({
       ...prev,
       image: "https://via.placeholder.com/500x500?text=Product+Image"
     }));
   };
-  
-  // Məhsul seçimi
-  const selectProduct = (product: any) => {
-    // Seçilən məhsul'un bəzi məlumatlarını forma əlavə et
-    setFormData(prev => ({
-      ...prev,
-      name: product.name,
-      description: product.description,
-      category: product.category,
-      gender: product.gender,
-      size: product.size,
-      concentration: product.concentration,
-      fragranceGroup: product.fragranceGroup || "",
-      notes: {
-        top: product.notes?.top || [],
-        middle: product.notes?.middle || [],
-        base: product.notes?.base || []
-      }
-    }));
-    setShowBrandProducts(false);
+
+  // Form göndərmə
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
   };
-  
+
+  // Form sahəsi komponenti - təkrarlanma azaltmaq üçün
+  const FormField = ({ label, children, required = false }: { label: string, children: React.ReactNode, required?: boolean }) => (
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {children}
+    </div>
+  );
+
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Sol tərəf */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Sol tərəf - Əsas Məlumatlar */}
           <div className="space-y-6">
             {/* Əsas məlumatlar */}
-            <div className="border rounded-lg p-4 space-y-4">
+            <div className="border rounded-lg p-4 space-y-4 bg-gray-50 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-800">Əsas Məlumatlar</h2>
               
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Brend *
-                </label>
-                <select 
-                  name="brand" 
-                  value={formData.brand} 
-                  onChange={handleInputChange}
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md w-full"
-                  required
-                >
-                  <option value="">Brendi seçin</option>
-                  {brands.map(brand => (
-                    <option key={brand} value={brand}>{brand}</option>
-                  ))}
-                </select>
-                
-                {/* Brend məhsullarının siyahısı */}
-                {showBrandProducts && (
-                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                    <div className="sticky top-0 bg-gray-100 px-4 py-2 border-b">
-                      <h3 className="text-sm font-medium text-gray-700">
-                        {formData.brand} brendinə aid məhsullar
-                      </h3>
-                    </div>
-                    <ul className="py-1">
-                      {brandProducts.map(product => (
-                        <li 
-                          key={product.id}
-                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
-                          onClick={() => selectProduct(product)}
-                        >
-                          <div className="flex items-center">
-                            {product.image && (
-                              <img 
-                                src={product.image} 
-                                alt={product.name} 
-                                className="h-8 w-8 mr-3 object-cover rounded"
-                              />
-                            )}
-                            <span>{product.name}</span>
-                          </div>
-                          <button 
-                            type="button"
-                            className="text-primary hover:text-primary/80"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              selectProduct(product);
-                            }}
-                          >
-                            <Eye size={16} />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+              {/* Brend (Dropdown) */}
+              <FormField label="Brend" required>
+                <div className="relative" ref={brandDropdownRef}>
+                  <div 
+                    className="flex cursor-pointer border border-gray-300 rounded-md"
+                    onClick={() => setShowBrandDropdown(!showBrandDropdown)}
+                  >
+                    <input 
+                      ref={brandInputRef}
+                      type="text" 
+                      id="brandInput"
+                      name="brand" 
+                      value={formData.brand} 
+                      onChange={handleInputChange}
+                      placeholder="Brend seçin"
+                      className="border-0 rounded-l-md w-full shadow-sm focus:ring-1 focus:ring-primary"
+                      required
+                      autoComplete="off"
+                      readOnly={!isCustomBrand}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isCustomBrand) {
+                          setShowBrandDropdown(true);
+                        }
+                      }}
+                    />
+                    <button 
+                      type="button"
+                      className="px-3 bg-gray-100 border-l border-gray-300 rounded-r-md text-gray-700 hover:bg-gray-200"
+                      onClick={(e) => { 
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowBrandDropdown(!showBrandDropdown); 
+                      }}
+                    >
+                      <ChevronDown size={18} />
+                    </button>
                   </div>
-                )}
-              </div>
+                  
+                  {/* Brendlər dropdown-u */}
+                  {showBrandDropdown && (
+                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto py-1">
+                      <div className="sticky top-0 bg-gray-50 border-b border-gray-200 px-4 py-2 text-xs font-medium text-gray-500 flex justify-between items-center">
+                        <span>Brend seçin</span>
+                        <button 
+                          onClick={() => setShowBrandDropdown(false)}
+                          className="text-gray-400 hover:text-gray-600"
+                          type="button"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                      {brands.map(brand => (
+                        <div 
+                          key={brand} 
+                          className={`px-4 py-2 hover:bg-primary hover:text-white cursor-pointer text-sm transition duration-150 ${brand === "Digər" ? "border-t border-gray-200 mt-1" : ""}`}
+                          onClick={() => handleBrandSelect(brand)}
+                        >
+                          {brand}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </FormField>
+
+              {/* Məhsul Adı (Dropdown ilə) */}
+              <FormField label="Məhsul adı" required>
+                <div className="relative" ref={productDropdownRef}>
+                  <div 
+                    className="flex cursor-pointer border border-gray-300 rounded-md"
+                    onClick={() => {
+                      setShowProductDropdown(!showProductDropdown);
+                    }}
+                  >
+                    <input 
+                      ref={productNameInputRef}
+                      type="text" 
+                      id="productNameInput" 
+                      name="name" 
+                      value={formData.name} 
+                      onChange={handleInputChange} 
+                      className="border-0 rounded-l-md w-full shadow-sm focus:ring-1 focus:ring-primary"
+                      required
+                      autoComplete="off"
+                      placeholder="Məhsul seçin"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowProductDropdown(true);
+                      }}
+                    />
+                    <button 
+                      type="button"
+                      className="px-3 bg-gray-100 border-l border-gray-300 rounded-r-md text-gray-700 hover:bg-gray-200"
+                      onClick={(e) => { 
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowProductDropdown(!showProductDropdown);
+                      }}
+                    >
+                      <ChevronDown size={18} />
+                    </button>
+                  </div>
+                  
+                  {/* Məhsullar dropdown-u */}
+                  {showProductDropdown && (
+                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto py-1">
+                      <div className="sticky top-0 bg-gray-50 border-b border-gray-200 px-4 py-2 text-xs font-medium text-gray-500 flex justify-between items-center">
+                        <span>
+                          {formData.brand 
+                            ? `Seçilmiş brend: ${formData.brand} (${brandProducts.length} məhsul)` 
+                            : `Bütün məhsullar (${allProducts.length})`}
+                        </span>
+                        <button 
+                          onClick={() => setShowProductDropdown(false)}
+                          className="text-gray-400 hover:text-gray-600"
+                          type="button"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                      
+                      {/* Digər (öz məhsulunu əlavə et) seçimi */}
+                      <div 
+                        className="px-4 py-2 hover:bg-primary hover:text-white cursor-pointer text-sm transition duration-150 border-b border-gray-200 mb-1"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, name: "" }));
+                          setIsCustomProduct(true);
+                          setShowProductDropdown(false);
+                        }}
+                      >
+                        Digər (öz məhsulunu əlavə et)
+                      </div>
+                      
+                      {/* Məhsullar siyahısı */}
+                      {(formData.brand ? brandProducts : allProducts).map(product => (
+                        <div 
+                          key={product.id} 
+                          className="px-4 py-2 hover:bg-primary hover:text-white cursor-pointer text-sm transition duration-150"
+                          onClick={() => handleSuggestionClick(product)}
+                        >
+                          {product.name} 
+                          <span className="text-xs text-gray-500 ml-1">
+                            ({product.brand})
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Custom Product Suggestions List */}
+                  {showProductSuggestions && (
+                    <div 
+                      ref={suggestionsRef}
+                      className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto py-1"
+                    >
+                      <div 
+                        className="px-4 py-2 hover:bg-primary hover:text-white cursor-pointer text-sm transition duration-150 border-b border-gray-200 mb-1"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, name: "" }));
+                          setIsCustomProduct(true);
+                          setShowProductSuggestions(false);
+                        }}
+                      >
+                        Digər (öz məhsulunu əlavə et)
+                      </div>
+                    
+                      {productSuggestions.map(product => (
+                        <div 
+                          key={product.id} 
+                          className="px-4 py-2 hover:bg-primary hover:text-white cursor-pointer text-sm transition duration-150"
+                          onClick={() => handleSuggestionClick(product)}
+                        >
+                          {product.name}
+                          <span className="text-xs text-gray-500 ml-1">
+                            ({product.brand})
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <p className="mt-1 text-xs text-gray-500">
+                    {formData.brand 
+                      ? `${formData.brand} brendinə aid məhsullar var. Kliklə siyahıdan seçin və ya öz məhsulunuzu yazın.` 
+                      : "Bütün məhsullar arasından seçim edin və ya brend seçərək filtrlənmiş siyahıya baxın."}
+                  </p>
+                </div>
+              </FormField>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Məhsul adı *
-                </label>
-                <input 
-                  type="text" 
-                  name="name" 
-                  value={formData.name} 
-                  onChange={handleInputChange} 
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md w-full"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Qiymət (₼) *
-                </label>
+              {/* Qiymət */}
+              <FormField label="Qiymət (₼)" required>
                 <input 
                   type="number" 
                   name="price" 
                   value={formData.price} 
                   onChange={handleInputChange} 
                   min="0" 
-                  step="0.01"
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md w-full"
-                  required
+                  step="0.01" 
+                  className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md w-full shadow-sm" 
+                  required 
                 />
-              </div>
+              </FormField>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kateqoriya *
-                </label>
+              {/* Kateqoriya */}
+              <FormField label="Kateqoriya" required>
                 <select 
                   name="category" 
                   value={formData.category} 
-                  onChange={handleInputChange}
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md w-full"
+                  onChange={handleInputChange} 
+                  className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md w-full shadow-sm" 
                   required
                 >
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
+                  {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
-              </div>
+              </FormField>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Məhsul təsviri
-                </label>
+              {/* Məhsul təsviri */}
+              <FormField label="Məhsul təsviri">
                 <textarea 
                   name="description" 
                   value={formData.description} 
                   onChange={handleInputChange} 
-                  rows={4}
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md w-full"
+                  rows={4} 
+                  className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md w-full shadow-sm"
                 ></textarea>
-              </div>
+              </FormField>
             </div>
             
-            {/* Şəkil yükləmə */}
-            <div className="border rounded-lg p-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Məhsul Şəkli</h2>
+            {/* Əlavə məlumatlar */}
+            <div className="border rounded-lg p-4 space-y-4 bg-gray-50 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-800">Əlavə Məlumatlar</h2>
               
-              {formData.image ? (
-                <div className="relative">
-                  <img 
-                    src={formData.image} 
-                    alt="Məhsul şəkli" 
-                    className="w-full h-64 object-cover rounded-md"
-                  />
-                  <button 
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, image: "" }))}
-                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-                  >
-                    <X size={16} />
-                  </button>
+              {/* Cins */}
+              <FormField label="Cins" required>
+                <div className="flex flex-wrap space-x-4">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="kişi"
+                      checked={formData.gender === "kişi"}
+                      onChange={handleInputChange}
+                      className="text-primary"
+                    />
+                    <span className="ml-2">Kişi</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="qadın"
+                      checked={formData.gender === "qadın"}
+                      onChange={handleInputChange}
+                      className="text-primary"
+                    />
+                    <span className="ml-2">Qadın</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="uniseks"
+                      checked={formData.gender === "uniseks"}
+                      onChange={handleInputChange}
+                      className="text-primary"
+                    />
+                    <span className="ml-2">Uniseks</span>
+                  </label>
                 </div>
-              ) : (
-                <div 
-                  className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center cursor-pointer hover:border-primary"
-                  onClick={handleImageUpload}
+              </FormField>
+              
+              {/* Həcm */}
+              <FormField label="Həcm">
+                <select 
+                  name="size" 
+                  value={formData.size} 
+                  onChange={handleInputChange} 
+                  className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md w-full shadow-sm"
                 >
-                  <Upload className="h-12 w-12 text-gray-400 mb-3" />
-                  <p className="text-sm text-gray-500">Şəkil yükləmək üçün klikləyin</p>
-                  <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF format (max 2MB)</p>
+                  <option value="">Seçin</option>
+                  {bottleSizes.map(size => <option key={size} value={size}>{size}</option>)}
+                </select>
+              </FormField>
+              
+              {/* Konsentrasiya */}
+              <FormField label="Konsentrasiya">
+                <select 
+                  name="concentration" 
+                  value={formData.concentration} 
+                  onChange={handleInputChange} 
+                  className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md w-full shadow-sm"
+                >
+                  <option value="">Seçin</option>
+                  {concentrations.map(conc => <option key={conc} value={conc}>{conc}</option>)}
+                </select>
+              </FormField>
+              
+              {/* Ətir qrupu */}
+              <FormField label="Ətir qrupu">
+                <select 
+                  name="fragranceGroup" 
+                  value={formData.fragranceGroup} 
+                  onChange={handleInputChange} 
+                  className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md w-full shadow-sm"
+                >
+                  <option value="">Seçin</option>
+                  {fragranceGroups.map(group => <option key={group} value={group}>{group}</option>)}
+                </select>
+              </FormField>
+              
+              {/* Stok və Seçilmiş */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                {/* Stok vəziyyəti */}
+                <div>
+                  <label className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      name="inStock" 
+                      checked={formData.inStock} 
+                      onChange={handleInputChange}
+                      className="text-primary rounded focus:ring-primary"
+                    />
+                    <span className="ml-2 text-sm font-medium text-gray-700">Stokda var</span>
+                  </label>
                 </div>
-              )}
+                
+                {/* Seçilmiş məhsul */}
+                <div>
+                  <label className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      name="featured" 
+                      checked={formData.featured} 
+                      onChange={handleInputChange}
+                      className="text-primary rounded focus:ring-primary"
+                    />
+                    <span className="ml-2 text-sm font-medium text-gray-700">Seçilmiş məhsul</span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
           
           {/* Sağ tərəf */}
           <div className="space-y-6">
-            {/* Əlavə məlumatlar */}
-            <div className="border rounded-lg p-4 space-y-4">
-              <h2 className="text-lg font-semibold text-gray-800">Əlavə Məlumatlar</h2>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Cins
-                </label>
-                <select 
-                  name="gender" 
-                  value={formData.gender} 
-                  onChange={handleInputChange}
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md w-full"
-                >
-                  <option value="uniseks">Uniseks</option>
-                  <option value="kişi">Kişi</option>
-                  <option value="qadın">Qadın</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Şüşə həcmi
-                </label>
-                <select 
-                  name="size" 
-                  value={formData.size} 
-                  onChange={handleInputChange}
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md w-full"
-                >
-                  <option value="">Həcmi seçin</option>
-                  {bottleSizes.map(size => (
-                    <option key={size} value={size}>{size}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Konsentrasiya
-                </label>
-                <select 
-                  name="concentration" 
-                  value={formData.concentration} 
-                  onChange={handleInputChange}
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md w-full"
-                >
-                  <option value="">Konsentrasiya seçin</option>
-                  {concentrations.map(conc => (
-                    <option key={conc} value={conc}>{conc}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ətir qrupu
-                </label>
-                <select 
-                  name="fragranceGroup" 
-                  value={formData.fragranceGroup} 
-                  onChange={handleInputChange}
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md w-full"
-                >
-                  <option value="">Ətir qrupu seçin</option>
-                  {fragranceGroups.map(group => (
-                    <option key={group} value={group}>{group}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center">
-                  <input 
-                    type="checkbox" 
-                    id="inStock" 
-                    name="inStock"
-                    checked={formData.inStock} 
-                    onChange={handleInputChange}
-                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  />
-                  <label htmlFor="inStock" className="ml-2 text-sm text-gray-700">
-                    Stokda var
-                  </label>
-                </div>
-                
-                <div className="flex items-center ml-4">
-                  <input 
-                    type="checkbox" 
-                    id="featured" 
-                    name="featured"
-                    checked={formData.featured} 
-                    onChange={handleInputChange}
-                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  />
-                  <label htmlFor="featured" className="ml-2 text-sm text-gray-700">
-                    Seçilmiş məhsul
-                  </label>
-                </div>
+            {/* Şəkil yükləmə */}
+            <div className="border rounded-lg p-4 space-y-4 bg-gray-50 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-800">Məhsul Şəkli</h2>
+              <div className="flex items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-white">
+                {formData.image ? (
+                  <div className="relative w-full">
+                    <img src={formData.image} alt="Product preview" className="w-full h-48 object-contain mx-auto" />
+                    <button 
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, image: "" }))}
+                      className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition"
+                      aria-label="Şəkli sil"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    type="button" 
+                    onClick={handleImageUpload}
+                    className="flex flex-col items-center p-8 text-gray-500 hover:text-primary transition"
+                  >
+                    <Upload size={32} className="mb-2" />
+                    <span className="text-sm font-medium">Şəkil yükləyin</span>
+                    <span className="text-xs text-gray-400 mt-1">(Maksimum 2MB, JPG və ya PNG)</span>
+                  </button>
+                )}
               </div>
             </div>
             
             {/* Notlar */}
-            <div className="border rounded-lg p-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Notlar</h2>
+            <div className="border rounded-lg p-4 space-y-4 bg-gray-50 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-800">Notlar</h2>
               
-              {/* Not tiplərini seçmək üçün tab'lar */}
-              <div className="mb-4 border-b">
-                <div className="flex space-x-4">
-                  <button 
-                    type="button"
-                    className={`py-2 px-3 font-medium text-sm ${activeNoteType === 'top' ? 'text-primary border-b-2 border-primary' : 'text-gray-500 hover:text-primary'}`}
-                    onClick={() => setActiveNoteType('top')}
-                  >
-                    Top Notlar
-                  </button>
-                  <button 
-                    type="button"
-                    className={`py-2 px-3 font-medium text-sm ${activeNoteType === 'middle' ? 'text-primary border-b-2 border-primary' : 'text-gray-500 hover:text-primary'}`}
-                    onClick={() => setActiveNoteType('middle')}
-                  >
-                    Middle Notlar
-                  </button>
-                  <button 
-                    type="button"
-                    className={`py-2 px-3 font-medium text-sm ${activeNoteType === 'base' ? 'text-primary border-b-2 border-primary' : 'text-gray-500 hover:text-primary'}`}
-                    onClick={() => setActiveNoteType('base')}
-                  >
-                    Base Notlar
-                  </button>
-                </div>
+              {/* Not tipi seçimi */}
+              <div className="flex border-b mb-4">
+                <button
+                  type="button"
+                  onClick={() => setActiveNoteType('top')}
+                  className={`px-4 py-2 text-sm font-medium transition ${activeNoteType === 'top' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Yuxarı notlar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveNoteType('middle')}
+                  className={`px-4 py-2 text-sm font-medium transition ${activeNoteType === 'middle' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Orta notlar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveNoteType('base')}
+                  className={`px-4 py-2 text-sm font-medium transition ${activeNoteType === 'base' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Baza notlar
+                </button>
               </div>
               
-              {/* Not əlavə etmə */}
-              <div className="flex gap-2 mb-4">
-                <select 
+              {/* Not əlavə etmə formu */}
+              <div className="flex space-x-2 mb-4">
+                <select
                   value={selectedNote}
                   onChange={(e) => setSelectedNote(e.target.value)}
-                  className="border-gray-300 focus:border-primary focus:ring-primary rounded-md flex-1"
+                  className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md w-full shadow-sm"
                 >
                   <option value="">Not seçin</option>
-                  {filteredNotes(activeNoteType).map(note => (
+                  {allNotes[activeNoteType].map(note => (
                     <option key={note} value={note}>{note}</option>
                   ))}
                 </select>
-                <button 
+                <button
                   type="button"
                   onClick={() => addNote(selectedNote)}
-                  className="px-3 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+                  className="px-3 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition flex-shrink-0 flex items-center"
+                  disabled={!selectedNote}
                 >
                   <Plus size={18} />
                 </button>
               </div>
               
-              {/* Seçilmiş notların siyahısı */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-gray-700">Seçilmiş {activeNoteType} notlar:</h3>
-                <div className="flex flex-wrap gap-2">
-                  {formData.notes[activeNoteType].length > 0 ? (
-                    formData.notes[activeNoteType].map(note => (
-                      <span 
-                        key={note} 
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary"
-                      >
-                        {note}
-                        <button 
-                          type="button" 
-                          onClick={() => removeNote(activeNoteType, note)}
-                          className="ml-1 text-primary hover:text-primary/80"
-                        >
-                          <X size={12} />
-                        </button>
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500 italic">Heç bir not seçilməyib</p>
-                  )}
-                </div>
+              {/* Seçilmiş notların göstərilməsi */}
+              <div className="space-y-4 bg-white p-3 rounded-md border border-gray-100">
+                {['top', 'middle', 'base'].map((noteType) => (
+                  <div key={noteType} className="space-y-2">
+                    <h3 className="text-sm font-medium text-gray-700 capitalize">
+                      {noteType === 'top' ? 'Yuxarı' : noteType === 'middle' ? 'Orta' : 'Baza'} notlar
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.notes[noteType as NoteType].length > 0 ? (
+                        formData.notes[noteType as NoteType].map((note) => (
+                          <span
+                            key={note}
+                            className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-800 text-xs rounded-full"
+                          >
+                            {note}
+                            <button
+                              type="button"
+                              onClick={() => removeNote(noteType as NoteType, note)}
+                              className="ml-1.5 text-gray-500 hover:text-red-500 transition"
+                              aria-label="Notu sil"
+                            >
+                              <X size={14} />
+                            </button>
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-gray-500 italic">Not əlavə edilməyib</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
         
         {/* Əməliyyat düymələri */}
-        <div className="flex justify-end space-x-3 pt-4 border-t">
+        <div className="flex justify-end space-x-3 pt-4 mt-4 border-t">
           <Link 
-            to="/admin/products"
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            to="/admin/products" 
+            className="px-5 py-2.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition shadow-sm font-medium"
           >
             Ləğv et
           </Link>
           <button 
-            type="submit"
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            type="submit" 
+            className="px-5 py-2.5 bg-primary text-white rounded-md hover:bg-primary/90 transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium" 
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Əlavə edilir...' : 'Məhsulu əlavə et'}

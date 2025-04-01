@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, ShoppingBag, ChevronRight, Heart, ArrowRight, ArrowLeft, TrendingUp, Clock, Gift, Truck, Shield, Search, Filter } from 'lucide-react';
+import { Star, ShoppingBag, ChevronRight, Heart, ArrowRight, ArrowLeft, TrendingUp, Clock, Gift, Truck, Shield, Search, Filter, User, Settings } from 'lucide-react';
 import { products } from '../../data/products';
 import { ProductCard } from '../../components/product-card';
+import { useAuth } from '../../lib/auth-context';
 
 // Yeni hero slide
 const heroSlides = [
@@ -59,6 +60,9 @@ const fragranceTypes = [
 ];
 
 export default function Home() {
+  const { user, isAdmin } = useAuth();
+  const [isAdminUser, setIsAdminUser] = useState(false);
+  const [adminCheckDone, setAdminCheckDone] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeGender, setActiveGender] = useState('all');
   const [visibleProducts, setVisibleProducts] = useState<typeof products>([]);
@@ -66,6 +70,27 @@ export default function Home() {
   const [isPaused, setIsPaused] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(true);
+  
+  // Admin rolunu yoxlayırıq
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      try {
+        const admin = await isAdmin();
+        setIsAdminUser(admin);
+      } catch (error) {
+        console.error('Admin rolu yoxlanılarkən xəta:', error);
+        setIsAdminUser(false);
+      } finally {
+        setAdminCheckDone(true);
+      }
+    };
+    
+    if (user) {
+      checkAdminRole();
+    } else {
+      setAdminCheckDone(true);
+    }
+  }, [isAdmin, user]);
   
   // Şəkillərin yüklənməsini yoxla
   useEffect(() => {
@@ -203,6 +228,28 @@ export default function Home() {
             backgroundRepeat: 'no-repeat',
           }}
         >
+          {/* Admin icon - yalnız admin istifadəçilər üçün */}
+          {isAdminUser && adminCheckDone && (
+            <Link 
+              to="/admin" 
+              className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-colors"
+              title="Admin Panel"
+            >
+              <Settings size={18} className="text-white" />
+            </Link>
+          )}
+          
+          {/* Daxil olmaq üçün ikona - yalnız daxil olmayanlar üçün */}
+          {!user && adminCheckDone && (
+            <Link 
+              to="/auth/login" 
+              className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-colors"
+              title="Daxil ol"
+            >
+              <User size={18} className="text-white" />
+            </Link>
+          )}
+          
           <div 
             className="absolute inset-0 flex flex-col items-center justify-center text-center p-4"
             style={{ 
