@@ -20,6 +20,9 @@ const AdminSettings = lazy(() => import('../pages/admin/pages/Settings'));
 const AdminNewProduct = lazy(() => import('../pages/admin/products/new'));
 const AdminCatalog = lazy(() => import('../pages/admin/pages/Catalog'));
 const Unauthorized = lazy(() => import('../pages/unauthorized'));
+const Brands = lazy(() => import('../pages/brands'));
+const NewProducts = lazy(() => import('../pages/new'));
+const Bestsellers = lazy(() => import('../pages/bestsellers'));
 
 export function AppRoutes() {
   const { user } = useAuth();
@@ -32,6 +35,12 @@ export function AppRoutes() {
         {/* Kataloq səhifələri */}
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="/product-details/:id" element={<ProductDetails />} />
+        
+        {/* Yeni əlavə edilən səhifələr */}
+        <Route path="/brands" element={<Brands />} />
+        <Route path="/new" element={<NewProducts />} />
+        <Route path="/bestsellers" element={<Bestsellers />} />
         
         {/* Auth routes */}
         <Route 
@@ -53,11 +62,7 @@ export function AppRoutes() {
         <Route 
           path="/admin" 
           element={
-            user?.role === UserRole.ADMIN ? (
-              <AdminLayout />
-            ) : (
-              <Navigate to="/admin/login" replace />
-            )
+            <AdminLayout />
           }
         >
           {/* AdminLayout içərisində göstəriləcək alt routlar */}

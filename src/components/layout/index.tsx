@@ -8,9 +8,9 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <Header />
-      <main className="flex-1 py-8">{children}</main>
+      <main className="flex-1 py-4">{children}</main>
       <Footer />
     </div>
   );

@@ -1,7 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import { Layout } from './components/layout';
 import { AppRoutes } from './routes';
-import { AuthProvider } from './lib/auth-context';
+import { AuthProvider, useAuth } from './lib/auth-context';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -20,6 +20,17 @@ function ScrollToTop() {
 function AppContent() {
   const { pathname } = useLocation();
   const isAdminRoute = pathname.startsWith('/admin');
+  const { refreshUser } = useAuth();
+  
+  // Tətbiq yükləndikdə, avtomatik olaraq user state-ni yeniləyirik
+  useEffect(() => {
+    // Əgər istifadəçi yoxdursa, admin hesabı yaradırıq
+    const initializeUser = async () => {
+      await refreshUser();
+    };
+    
+    initializeUser();
+  }, [refreshUser]);
   
   return (
     <>

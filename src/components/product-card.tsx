@@ -2,51 +2,20 @@ import { useNavigate } from 'react-router-dom';
 import { Star, Heart, ShoppingBag, Eye } from 'lucide-react';
 import { Product } from '../data/products';
 import { cn } from '../lib/utils';
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left; // x position within the element
-    const y = e.clientY - rect.top; // y position within the element
-    
-    // Calculate percentage position
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    // Get distance from center in percentage
-    const percentX = (x - centerX) / centerX * 15; // max 15% movement
-    const percentY = (y - centerY) / centerY * 8; // max 8% movement
-    
-    setPosition({ x: percentX, y: percentY });
-  };
-
-  const handleMouseEnter = () => {
-    setIsHovering(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovering(false);
-    // Reset position with animation when mouse leaves
-    setPosition({ x: 0, y: 0 });
-  };
   
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate(`/products/${product.id}`);
+    navigate(`/product-details/${product.id}`);
   };
 
   const toggleFavorite = (e: React.MouseEvent) => {
@@ -63,22 +32,14 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div 
-      ref={cardRef}
-      className="group relative bg-white border border-transparent hover:border-gold-300 transition-all duration-500 cursor-pointer"
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className="group relative bg-white border border-gold-200 hover:border-primary hover:shadow-lg transition-all duration-300 cursor-pointer w-full min-w-[180px] max-w-[100%] mx-auto flex flex-col rounded-sm transform hover:-translate-y-1 hover:scale-[1.02]"
       onClick={handleCardClick}
-      style={{ 
-        transform: isHovering ? `perspective(1000px) rotateX(${-position.y}deg) rotateY(${position.x}deg) scale3d(1.01, 1.01, 1.01)` : 'perspective(1000px) rotateX(0deg) rotateY(0deg)',
-        transition: isHovering ? 'transform 0.2s ease' : 'transform 0.5s ease-out'
-      }}
     >
       {/* Şəkil konteyner */}
-      <div className="relative aspect-square overflow-hidden bg-gold-100">
+      <div className="relative aspect-[1/1.1] overflow-hidden bg-gray-50 flex-grow-0">
         {/* Favori düyməsi */}
         <button 
-          className="absolute top-3 right-3 z-10 p-2 bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary/10"
+          className="absolute top-3 right-3 z-10 p-2 bg-white/90 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary/10 rounded-full shadow-md hover:shadow-lg"
           aria-label="Seçilmişlərə əlavə et"
           onClick={toggleFavorite}
         >
@@ -87,56 +48,48 @@ export function ProductCard({ product }: ProductCardProps) {
           )} />
         </button>
 
+        {/* Endirim etiketləri */}
+        {product.discount && (
+          <div className="absolute top-3 left-3 z-10 bg-primary text-white text-xs font-medium py-1.5 px-2.5 rounded-sm animate-pulse">
+            -{product.discount}%
+          </div>
+        )}
+
         {/* Şəkil */}
-        <div 
-          className="relative h-full w-full flex items-center justify-center p-6"
-          style={{ 
-            transform: isHovering ? `translate3d(${position.x * 0.7}px, ${position.y * 0.7}px, 0)` : '',
-            transition: isHovering ? 'transform 0.2s ease' : 'transform 0.5s ease-out'
-          }}
-        >
+        <div className="relative h-full w-full flex items-center justify-center p-0">
           <img
             src={product.image}
             alt={product.name}
-            className="h-full w-full object-contain object-center transition-transform duration-700 group-hover:scale-105"
+            className="h-full w-full object-contain object-center transition-transform duration-500 group-hover:scale-110"
             style={{ 
-              mixBlendMode: 'multiply',
-              transform: isHovering ? `translate3d(${position.x * 1.2}px, ${position.y * 1.2}px, 30px)` : '',
-              transition: isHovering ? 'transform 0.2s ease' : 'transform 0.5s ease-out'
+              maxHeight: '220px',
+              maxWidth: '100%',
+              margin: '0 auto'
             }}
+            loading="lazy"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              target.src = "https://dummyimage.com/200x200/f0f0f0/333333.png&text=Şəkil+yoxdur";
+              target.src = "https://dummyimage.com/220x220/f0f0f0/333333.png&text=Şəkil+yoxdur";
               target.onerror = null;
             }}
           />
         </div>
 
         {/* Overlay ilə düymələr */}
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center gap-3">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
           <button 
-            className="bg-white text-dark px-5 py-2.5 text-sm font-didot uppercase tracking-wider flex items-center gap-2 hover:bg-primary hover:text-white transition-colors duration-300 z-10"
-            style={{ 
-              transform: isHovering ? `translate3d(${-position.x * 0.5}px, ${-position.y * 0.5}px, 40px)` : 'translateY(20px)',
-              opacity: isHovering ? 1 : 0,
-              transition: isHovering ? 'transform 0.3s ease, opacity 0.3s ease' : 'transform 0.5s ease-out, opacity 0.5s ease-out'
-            }}
+            className="bg-white text-dark px-4 py-2 text-sm font-didot uppercase tracking-wider flex items-center gap-2 hover:bg-primary hover:text-white transition-colors duration-300 z-10 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-sm shadow-md"
             onClick={addToCart}
           >
             <ShoppingBag className="h-4 w-4" />
             Səbətə əlavə et
           </button>
           <button 
-            className="bg-transparent text-white border border-white px-5 py-2.5 text-sm font-didot uppercase tracking-wider flex items-center gap-2 hover:bg-white hover:text-dark transition-colors duration-300 z-10"
-            style={{ 
-              transform: isHovering ? `translate3d(${position.x * 0.5}px, ${-position.y * 0.5}px, 40px)` : 'translateY(20px)',
-              opacity: isHovering ? 1 : 0,
-              transition: isHovering ? 'transform 0.4s ease 0.1s, opacity 0.4s ease 0.1s' : 'transform 0.5s ease-out, opacity 0.5s ease-out'
-            }}
+            className="bg-transparent text-white border border-white px-4 py-2 text-sm font-didot uppercase tracking-wider flex items-center gap-2 hover:bg-white hover:text-dark transition-colors duration-300 z-10 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75 rounded-sm shadow-md"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              navigate(`/products/${product.id}`);
+              navigate(`/product-details/${product.id}`);
             }}
           >
             <Eye className="h-4 w-4" />
@@ -146,18 +99,12 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Məhsul məlumatları */}
-      <div 
-        className="p-4 text-center bg-white"
-        style={{ 
-          transform: isHovering ? `translate3d(${position.x * 0.2}px, ${position.y * 0.2}px, 10px)` : '',
-          transition: isHovering ? 'transform 0.2s ease' : 'transform 0.5s ease-out'
-        }}
-      >
+      <div className="p-3 px-4 text-center bg-white">
         {/* Brend */}
         <p className="text-sm font-didot text-primary uppercase tracking-wider mb-1">{product.brand}</p>
         
         {/* Məhsul adı */}
-        <h3 className="text-sm font-medium text-dark uppercase tracking-wide line-clamp-2 mb-3">
+        <h3 className="text-sm font-medium text-dark uppercase tracking-wide line-clamp-2 mb-1.5 group-hover:text-primary transition-colors duration-300">
           {product.name}
         </h3>
 
@@ -165,15 +112,20 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 text-primary fill-primary" />
-            <span className="text-xs text-gold-700">{product.rating}</span>
+            <span className="text-sm text-gold-700">{product.rating}</span>
           </div>
-          <p className="text-base font-didot text-dark">{product.price} ₼</p>
+          <p className="text-base font-didot text-dark group-hover:text-primary transition-colors font-medium">
+            {product.price} ₼
+            {product.oldPrice && (
+              <span className="text-xs ml-1.5 text-gold-500 line-through">{product.oldPrice} ₼</span>
+            )}
+          </p>
         </div>
       </div>
 
       {/* Alt hissə - konsentrasiya və həcm */}
-      <div className="border-t border-gold-200 py-2 px-4 text-center">
-        <p className="text-xs text-gold-700 font-light">
+      <div className="border-t border-gold-200 py-2 px-4 text-center bg-white/80 group-hover:border-primary/20 transition-colors">
+        <p className="text-sm text-gold-700 font-light">
           {product.concentration} • {product.size}
         </p>
       </div>

@@ -41,6 +41,9 @@ export default {
         'elegant': '0 4px 20px rgba(0, 0, 0, 0.08)',
         'gold': '0 4px 15px rgba(179, 148, 94, 0.15)',
       },
+      screens: {
+        'xs': '475px',
+      },
     },
   },
   plugins: [

@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, ShoppingBag, ChevronRight, Heart, ArrowRight, ArrowLeft, TrendingUp, Clock, Gift, Truck, Shield, Search, Filter, User, Settings } from 'lucide-react';
 import { products } from '../../data/products';
-import { ProductCard } from '../../components/product-card';
 import { useAuth } from '../../lib/auth-context';
 
-// Yeni hero slide
+// Komponentləri lazy load ilə yükləyək
+const ProductCard = lazy(() => import('../../components/product-card').then(mod => ({ default: mod.ProductCard })));
+
+// Hero slide-ların şəkil yollarını və ölçülərini optimallaşdıraq
 const heroSlides = [
   {
     title: "Prada Luna Rossa Black",
@@ -42,7 +44,7 @@ const brands = [
   { name: 'Bvlgari', slug: 'bvlgari' }
 ];
 
-// Yeni kategoriyalar
+// Kategoriyaları kiçik şəkillərlə yükləyək
 const categories = [
   { name: 'Qadın ətirləri', slug: 'qadin', image: '/images/perfumes/perfume1.jpg' },
   { name: 'Kişi ətirləri', slug: 'kisi', image: '/images/perfumes/perfume2.jpg' },
@@ -75,8 +77,10 @@ export default function Home() {
   useEffect(() => {
     const checkAdminRole = async () => {
       try {
-        const admin = await isAdmin();
-        setIsAdminUser(admin);
+        if (user) {
+          const admin = await isAdmin();
+          setIsAdminUser(admin);
+        }
       } catch (error) {
         console.error('Admin rolu yoxlanılarkən xəta:', error);
         setIsAdminUser(false);
@@ -85,11 +89,7 @@ export default function Home() {
       }
     };
     
-    if (user) {
-      checkAdminRole();
-    } else {
-      setAdminCheckDone(true);
-    }
+    checkAdminRole();
   }, [isAdmin, user]);
   
   // Şəkillərin yüklənməsini yoxla
@@ -218,11 +218,11 @@ export default function Home() {
   return (
     <div className="bg-white">
       {/* Hero section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden h-[40vh] sm:h-[45vh] md:h-[50vh]">
         <div 
-          className={`relative h-[70vh] transition-opacity duration-700 ${animateHero ? 'opacity-100' : 'opacity-0'}`}
+          className={`relative h-full w-full transition-opacity duration-500 ${animateHero ? 'opacity-100' : 'opacity-0'}`}
           style={{
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), url(${heroSlides[currentSlide].image})`,
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4)), url(${heroSlides[currentSlide].image})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -250,57 +250,26 @@ export default function Home() {
             </Link>
           )}
           
-          <div 
-            className="absolute inset-0 flex flex-col items-center justify-center text-center p-4"
-            style={{ 
-              transform: `translateY(${scrollPosition * 0.2}px)` 
-            }}
-          >
-            <div className="max-w-4xl mx-auto">
-              <h1 
-                className="text-white text-3xl md:text-5xl font-didot uppercase tracking-wider mb-4"
-                style={{ 
-                  opacity: 1 - scrollPosition * 0.002,
-                }}
-              >
+          {/* Hero məzmunu */}
+          <div className="absolute inset-0 flex items-center justify-center text-center">
+            <div className="max-w-xl px-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-didot font-thin text-white mb-1 sm:mb-2">
                 {heroSlides[currentSlide].title}
               </h1>
-              <p 
-                className="text-white/90 text-lg md:text-xl font-light mb-8"
-                style={{ 
-                  opacity: 1 - scrollPosition * 0.003,
-                }}
-              >
+              <p className="text-sm sm:text-base text-white/90 mb-4 sm:mb-6 font-light max-w-md mx-auto">
                 {heroSlides[currentSlide].subtitle}
               </p>
               <Link 
                 to="/products" 
-                className="bvlgari-btn"
+                className="inline-block bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/40 px-4 sm:px-6 py-2 text-sm sm:text-base uppercase tracking-wider transition-colors"
               >
                 {heroSlides[currentSlide].cta}
               </Link>
             </div>
           </div>
           
-          {/* Slide control buttons */}
-          <button 
-            onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center border border-white/30 text-white hover:bg-white/10 transition-colors"
-            aria-label="Previous slide"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          
-          <button 
-            onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center border border-white/30 text-white hover:bg-white/10 transition-colors"
-            aria-label="Next slide"
-          >
-            <ArrowRight className="w-5 h-5" />
-          </button>
-          
-          {/* Slide indicators */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+          {/* Slayd indikatorları */}
+          <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
             {heroSlides.map((_, index) => (
               <button
                 key={index}
@@ -321,126 +290,110 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Brendlər markaları */}
-      <section className="py-16 relative overflow-hidden">
-        <div className="container mx-auto px-4 mb-10">
-          <h2 className="deluxe-section-title">
+      {/* Premium Brendlər Bölməsi */}
+      <section className="py-4 sm:py-6">
+        <div className="container mx-auto px-4">
+          <h2 className="deluxe-section-title text-2xl sm:text-3xl">
             Premium Brendlər
           </h2>
-        </div>
-        
-        <div className="brands-marquee">
-          <div 
-            className="flex justify-around items-center py-6 gap-8"
-            style={marqueeStyle}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            {brands.concat(brands).map((brand, index) => (
-              <Link 
-                key={`${brand.slug}-${index}`}
-                to={`/brands/${brand.slug}`}
-                className="font-didot text-xl md:text-2xl uppercase text-gold-600 hover:text-primary transition-colors duration-300 tracking-widest px-6 whitespace-nowrap"
-              >
-                {brand.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Kategoriyalar */}
-      <section className="py-16 bg-gold-100">
-        <div className="container mx-auto px-4">
-          <h2 className="deluxe-section-title">
-            Ətir Kateqoriyaları
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {categories.map((category) => (
-              <Link 
-                key={category.slug}
-                to={`/products?category=${category.slug}`}
-                className="group relative overflow-hidden block h-[300px]"
-              >
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500"></div>
-                <img 
-                  src={category.image}
-                  alt={category.name}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <h3 className="text-white text-xl font-didot uppercase tracking-widest bg-black/40 px-6 py-4 group-hover:bg-primary/80 transition-colors duration-500">
-                    {category.name}
-                  </h3>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Populyar məhsullar */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="deluxe-section-title">
-            Populyar Ətirlər
-          </h2>
           
-          <div className="flex items-center justify-center mb-10">
-            <div className="inline-flex border-b border-gold-200 p-1">
-              <button
-                className={`px-6 py-2 text-sm uppercase tracking-wider ${
-                  activeGender === 'all' ? 'text-primary border-b-2 border-primary' : 'text-gold-700'
-                }`}
-                onClick={() => setActiveGender('all')}
-              >
-                Hamısı
-              </button>
-              <button
-                className={`px-6 py-2 text-sm uppercase tracking-wider ${
-                  activeGender === 'qadın' ? 'text-primary border-b-2 border-primary' : 'text-gold-700'
-                }`}
-                onClick={() => setActiveGender('qadın')}
-              >
-                Qadın
-              </button>
-              <button
-                className={`px-6 py-2 text-sm uppercase tracking-wider ${
-                  activeGender === 'kişi' ? 'text-primary border-b-2 border-primary' : 'text-gold-700'
-                }`}
-                onClick={() => setActiveGender('kişi')}
-              >
-                Kişi
-              </button>
-              <button
-                className={`px-6 py-2 text-sm uppercase tracking-wider ${
-                  activeGender === 'uniseks' ? 'text-primary border-b-2 border-primary' : 'text-gold-700'
-                }`}
-                onClick={() => setActiveGender('uniseks')}
-              >
-                Uniseks
-              </button>
+          <div className="brands-marquee overflow-hidden">
+            <div 
+              className="flex justify-around items-center py-4 gap-8 sm:gap-10"
+              style={marqueeStyle}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              {brands.concat(brands).map((brand, index) => (
+                <Link 
+                  key={`${brand.slug}-${index}`}
+                  to={`/products?brand=${brand.slug}`}
+                  className="font-didot text-xl sm:text-2xl font-bold uppercase text-gold-600 hover:text-primary transition-colors duration-300 tracking-widest whitespace-nowrap hover:scale-110 transition-transform"
+                >
+                  {brand.name}
+                </Link>
+              ))}
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {visibleProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+        </div>
+      </section>
+
+      {/* Kateqoriyalar */}
+      <section className="container mx-auto py-3 sm:py-4">
+        <h2 className="text-lg md:text-xl font-didot text-center uppercase mb-2 sm:mb-3">Kateqoriyalar</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-0.5 xs:gap-1 md:gap-2">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className="relative h-[150px] xs:h-[180px] rounded-sm overflow-hidden group"
+            >
+              <img 
+                src={category.image} 
+                alt={category.name}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-300 flex items-center justify-center">
+                <h3 className="text-white font-didot tracking-wide uppercase text-sm sm:text-base">{category.name}</h3>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Top satılan məhsullar */}
+      <section className="container mx-auto py-3 sm:py-4">
+        <h2 className="text-lg md:text-xl font-didot text-center uppercase mb-2 sm:mb-3">Top satılanlar</h2>
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0.5 xs:gap-1 md:gap-2 mx-auto">
+          {products.slice(0, 4).map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+
+      {/* Bonus banner */}
+      <section className="container mx-auto py-3 sm:py-4">
+        <div className="bg-primary/10 py-4 sm:py-6 px-4 sm:px-8 rounded-sm">
+          <div className="max-w-3xl mx-auto text-center flex flex-col items-center gap-2">
+            <h2 className="text-xl md:text-2xl font-didot text-primary">Bonus proqramına qoşulun</h2>
+            <p className="text-sm md:text-base text-dark">Hər alış-verişdən bonus toplayın və növbəti sifarişlərinizdə istifadə edin</p>
+            <button className="mt-2 bg-primary hover:bg-primary/90 text-white py-2 px-6 rounded-sm text-sm md:text-base transition-colors">Qoşulun</button>
           </div>
-          
-          <div className="text-center mt-12">
-            <Link to="/products" className="bvlgari-btn-outline">
-              Bütün məhsulları kəşf et
-            </Link>
-          </div>
+        </div>
+      </section>
+
+      {/* Yeni məhsullar */}
+      <section className="container mx-auto py-3 sm:py-4">
+        <h2 className="text-lg md:text-xl font-didot text-center uppercase mb-2 sm:mb-3">Yeni gələnlər</h2>
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0.5 xs:gap-1 md:gap-2 mx-auto">
+          {products.slice(8, 12).map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+
+      {/* Brendlər */}
+      <section className="container mx-auto py-3 sm:py-4">
+        <h2 className="text-lg md:text-xl font-didot text-center uppercase mb-2 sm:mb-3">Brendlər</h2>
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-0.5 xs:gap-1 md:gap-2">
+          {brands.map((brand) => (
+            <div
+              key={brand.id}
+              className="flex items-center justify-center bg-gold-50 border border-gold-100 hover:border-primary/30 transition-colors h-14 sm:h-16 rounded-sm px-2"
+            >
+              <img 
+                src={brand.logo} 
+                alt={brand.name}
+                className="max-w-full max-h-10 object-contain filter grayscale hover:grayscale-0 transition-all"
+              />
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Axtarış və Filter */}
-      <section className="py-6 bg-accent/30">
+      <section className="py-4 bg-white">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
             <div className="relative w-full md:w-1/3">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
@@ -469,214 +422,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Kateqoriyalar */}
-      <section className="py-12">
+      {/* Blog & Məqalələr Bölməsi */}
+      <section className="py-6">
         <div className="container mx-auto px-4">
-          <h2 className="parfumbar-heading text-2xl">Kateqoriyalar</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6">
-            {categories.map((category) => (
-              <Link
-                key={category.slug}
-                to={`/products?category=${category.slug}`}
-                className="parfumbar-card group overflow-hidden rounded-lg relative h-60 shadow-md"
-              >
-                <div 
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                  style={{ backgroundImage: `url(${category.image})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-80" />
-                <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                  <h3 className="text-xl font-bold">{category.name}</h3>
-                  <p className="text-sm mt-1 opacity-90">Bütün kolleksiyaya baxın</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-      
-      {/* Ən Populyar Ətirlər Bölməsi */}
-      <section className="py-12 bg-gradient-to-r from-accent/20 to-accent/5">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="parfumbar-heading text-3xl mb-2">Ən Populyar Ətirlər</h2>
-              <p className="text-gray-600">Müştərilərimizin ən çox sevdiyi ətirlər</p>
-            </div>
-            <Link to="/products" className="parfumbar-btn-outline hidden md:flex items-center gap-2">
-              Hamısına bax
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
+          <h2 className="parfumbar-heading text-2xl mb-4">Blog & Məqalələr</h2>
           
-          {/* Cins filterləri */}
-          <div className="flex gap-3 mb-6 overflow-x-auto pb-2 no-scrollbar">
-            <button 
-              className={`parfumbar-category ${
-                activeGender === 'all' 
-                  ? 'bg-secondary text-secondary-foreground' 
-                  : ''
-              }`}
-              onClick={() => setActiveGender('all')}
-            >
-              Hamısı
-            </button>
-            <button 
-              className={`parfumbar-category ${
-                activeGender === 'kişi' 
-                  ? 'bg-secondary text-secondary-foreground' 
-                  : ''
-              }`}
-              onClick={() => setActiveGender('kişi')}
-            >
-              Kişi
-            </button>
-            <button 
-              className={`parfumbar-category ${
-                activeGender === 'qadın' 
-                  ? 'bg-secondary text-secondary-foreground' 
-                  : ''
-              }`}
-              onClick={() => setActiveGender('qadın')}
-            >
-              Qadın
-            </button>
-            <button 
-              className={`parfumbar-category ${
-                activeGender === 'uniseks' 
-                  ? 'bg-secondary text-secondary-foreground' 
-                  : ''
-              }`}
-              onClick={() => setActiveGender('uniseks')}
-            >
-              Uniseks
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {visibleProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          
-          <div className="text-center mt-8 md:hidden">
-            <Link to="/products" className="parfumbar-btn-outline inline-flex items-center gap-2">
-              Hamısına bax
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Orta banner - Mövsümi Kolleksiya */}
-      <section className="py-16 bg-gradient-to-r from-primary/10 to-accent/20 relative overflow-hidden">
-        <div className="container mx-auto px-4 relative">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="max-w-lg">
-              <span className="inline-block bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-medium mb-3">Mövsüm Trendi</span>
-              <h2 className="text-3xl font-bold mb-4">Payız/Qış Kolleksiyası</h2>
-              <p className="text-gray-600 mb-6">
-                Payızın isti notları və qışın əsrarəngiz rayihələri ilə zənginləşdirilmiş yeni kolleksiyamızı kəşf edin. <span className="text-primary font-bold">Məhdud sayda</span> təklif edilir.
-              </p>
-              <Link
-                to="/products?collection=seasonal"
-                className="parfumbar-btn"
-              >
-                Kolleksiyaya baxın
-              </Link>
-            </div>
-            <div className="flex-1 flex justify-center">
-              <div className="parfumbar-card w-80 h-80 bg-gradient-to-br from-primary/5 to-primary/20 relative border border-white/20 shadow-lg transform rotate-3">
-                <img 
-                  src="https://images.unsplash.com/photo-1616704469824-55aa076c1322?auto=format&fit=crop&w=600&q=80" 
-                  alt="Mövsümi kolleksiya" 
-                  className="absolute inset-0 w-full h-full object-cover object-center rounded-lg opacity-50"
-                />
-                <div className="absolute inset-0 flex items-center justify-center p-6 bg-gradient-to-tr from-primary/70 to-transparent rounded-lg">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-white rounded-full mx-auto flex items-center justify-center mb-4 shadow-md">
-                      <Star className="w-8 h-8 text-primary fill-primary/20" />
-                    </div>
-                    <h3 className="text-white font-bold text-xl mb-2">Mövsümi Qoxular</h3>
-                    <p className="text-white/90 text-sm mb-4">Unudulmaz anlar üçün əsrarəngiz notlar</p>
-                    <span className="inline-block bg-white/80 text-primary font-bold px-4 py-2 rounded-md text-sm">
-                      YENİ KOLLEKSİYA
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Yeni Gələnlər Bölməsi */}
-      <section className="py-12 bg-accent/20">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="parfumbar-heading text-3xl mb-2">Yeni Gələnlər</h2>
-              <p className="text-gray-600">Ən son əlavə edilən ətirlər</p>
-            </div>
-            <Link to="/products?sort=newest" className="parfumbar-btn-outline hidden md:flex items-center gap-2">
-              Hamısına baxın
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
-            {newProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          
-          <div className="text-center mt-8 md:hidden">
-            <Link to="/products?sort=newest" className="parfumbar-btn-outline inline-flex items-center gap-2">
-              Hamısına baxın
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Üstünlüklərimiz */}
-      <section className="py-16 bg-gradient-to-b from-white to-accent/10">
-        <div className="container mx-auto px-4">
-          <h2 className="parfumbar-heading text-3xl text-center mb-12">Niyə bizi seçməlisiniz?</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="parfumbar-card p-8 text-center hover:border-primary/20 border-b-4 border-transparent hover:border-b-primary shadow-md hover:shadow-lg transition-all duration-300">
-              <div className="w-20 h-20 bg-primary/10 flex items-center justify-center rounded-full mx-auto mb-6 transform transition-transform hover:scale-110">
-                <TrendingUp className="w-10 h-10 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">100% Orijinal</h3>
-              <p className="text-gray-600">Bütün məhsullar orijinallığına zəmanət verilir və birbaşa rəsmi distribütorlardan tədarük olunur.</p>
-            </div>
-            
-            <div className="parfumbar-card p-8 text-center hover:border-primary/20 border-b-4 border-transparent hover:border-b-primary shadow-md hover:shadow-lg transition-all duration-300">
-              <div className="w-20 h-20 bg-primary/10 flex items-center justify-center rounded-full mx-auto mb-6 transform transition-transform hover:scale-110">
-                <Truck className="w-10 h-10 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Sürətli Çatdırılma</h3>
-              <p className="text-gray-600">Sifarişləriniz 1-3 iş günü ərzində ünvanınıza çatdırılır və çatdırılma prosesini izləyə bilərsiniz.</p>
-            </div>
-            
-            <div className="parfumbar-card p-8 text-center hover:border-primary/20 border-b-4 border-transparent hover:border-b-primary shadow-md hover:shadow-lg transition-all duration-300">
-              <div className="w-20 h-20 bg-primary/10 flex items-center justify-center rounded-full mx-auto mb-6 transform transition-transform hover:scale-110">
-                <Gift className="w-10 h-10 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Pulsuz Nümunələr</h3>
-              <p className="text-gray-600">Hər sifarişlə birlikdə yeni kolleksiyadan pulsuz ətir nümunələri hədiyyə edilir.</p>
-            </div>
-            
-            <div className="parfumbar-card p-8 text-center hover:border-primary/20 border-b-4 border-transparent hover:border-b-primary shadow-md hover:shadow-lg transition-all duration-300">
-              <div className="w-20 h-20 bg-primary/10 flex items-center justify-center rounded-full mx-auto mb-6 transform transition-transform hover:scale-110">
-                <Shield className="w-10 h-10 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Təhlükəsiz Ödəniş</h3>
-              <p className="text-gray-600">Bütün ödənişlər təhlükəsiz şəkildə həyata keçirilir və şəxsi məlumatlarınız qorunur.</p>
-            </div>
-          </div>
+          {/* Blog postları burada göstəriləcək */}
         </div>
       </section>
     </div>

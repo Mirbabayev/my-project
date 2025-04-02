@@ -1,12 +1,22 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { compression } from 'vite-plugin-compression2';
+import { imagetools } from 'vite-imagetools';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    imagetools(),
+    compression({
+      include: [/\.(js|css|html|svg|json|xml|txt|ttf|otf|eot|woff|woff2)$/],
+      exclude: [/\.(png|jpe?g|webp|gif|tiff)$/],
+      algorithm: 'gzip',
+    }),
+  ],
   
-  // Asılılıqların optimizasiyası
+  // Daha yaxşı performans üçün modulları önbelləkdə saxla
   optimizeDeps: {
     include: [
       'react', 
@@ -16,10 +26,16 @@ export default defineConfig({
       'lucide-react'
     ],
     exclude: [],
+    esbuildOptions: {
+      target: 'es2020'
+    }
   },
   
-  // Giriş nöqtəsi və qurğu parametrləri
+  // Build zamanı optimallaşdırma
   build: {
+    cssCodeSplit: true,
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
@@ -27,15 +43,16 @@ export default defineConfig({
       output: {
         manualChunks: {
           'vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui': ['lucide-react']
+          'ui': ['lucide-react'],
+          'utils': ['@tanstack/react-query']
         }
       }
     },
-    sourcemap: true,
+    sourcemap: false,
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: false,
+        drop_console: true,
         drop_debugger: true
       }
     }
@@ -50,11 +67,10 @@ export default defineConfig({
   
   // Server
   server: {
-    port: 5173, // Default port
-    strictPort: false, // Allow fallback to other ports if 5173 is in use
-    open: true, // Automatically open browser on start
+    port: 5173,
+    strictPort: false,
+    open: true,
     proxy: {
-      // SPA uygulamaları için tüm rotaları index.html'e yönlendir
       "^/products/.*": {
         target: "http://localhost:5173",
         rewrite: () => '/index.html'
@@ -63,6 +79,21 @@ export default defineConfig({
         target: "http://localhost:5173",
         rewrite: () => '/index.html'
       }
+    },
+    // Cache'ləmə və əlavə optimallaşdırma
+    hmr: {
+      overlay: true,
+    },
+    watch: {
+      usePolling: false,
     }
   },
+  
+  // Əlavə optimallaşdırmalar
+  css: {
+    devSourcemap: false,
+  },
+  
+  // Şəkil optimallaşdırması üçün
+  assetsInclude: ['**/*.jpg', '**/*.png', '**/*.webp'],
 });
